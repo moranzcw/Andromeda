@@ -14,8 +14,8 @@
 #include "camera.h"
 #include "material.h"
 
-#define WIDTH 256*4 // 宽
-#define HEIGHT 144*4 // 高
+#define WIDTH 1280 // 宽
+#define HEIGHT 720 // 高
 #define SAMPLE 64 // 采样率
 #define DEPTH 50 // 迭代深度
 #define LOOK_FROM vec3(0,2,15) // 相机位置
@@ -64,14 +64,14 @@ hitable *random_scene() {
             if ((center-vec3(4, 0.2, 0)).length() > 0.9
                 && (center-vec3(0, 0.2, 0)).length() > 0.9
                 && (center-vec3(-4, 0.2, 0)).length() > 0.9) {
-                if (choose_mat < 0.8) {  // 0.8概率的漫反射材质
-                    list[i++] = new sphere(center, 0.2, new lambertian(vec3(drand48()*drand48(), drand48()*drand48(), drand48()*drand48())));
+                if (choose_mat < 0.6) {  // 0.6概率的漫反射材质
+                    list[i++] = new sphere(center, 0.2, new lambertian(vec3(0.9*drand48(), 0.3, 0.2)));
                 }
-                else if (choose_mat < 0.95) { // 0.15概率的金属材质
+                else if (choose_mat < 0.9) { // 0.3概率的金属材质
                     list[i++] = new sphere(center, 0.2,
-                                           new metal(vec3(0.5*(1 + drand48()), 0.5*(1 + drand48()), 0.5*(1 + drand48())),  0.5*drand48()));
+                                           new metal(vec3(0.5*(1 + drand48()), 0.5*(1 + drand48()), 0.3*(1 + drand48())),  0.2*drand48()));
                 }
-                else {  // 0.05概率的玻璃材质
+                else {  // 0.1概率的玻璃材质
                     list[i++] = new sphere(center, 0.2, new dielectric(1.5));
                 }
             }
@@ -99,12 +99,14 @@ int main() {
     list[3] = new sphere(vec3(-2, 1, 0), 1.0, new dielectric(1.5));
     list[4] = new sphere(vec3(-2, 1, 0), 0.8, new dielectric(1.5));
     hitable *world = new hitable_list(list,5);
-//    world = random_scene();
+    world = random_scene();
 
     
     camera cam(LOOK_FROM, LOOK_AT, vec3(0,1,0), 20, float(WIDTH)/float(HEIGHT), APERTURE, DIST_TO_FOCUS);
     
-    // 从上到下
+
+    std::cout<<"Rendering ..."<<std::endl;
+    // 从上到下渲染
     for (int j = HEIGHT-1; j >= 0; j--) {
         std::cout<<(HEIGHT-j)/(HEIGHT*1.0)*100<<"%"<<std::endl;
         // 从左到右
@@ -130,5 +132,6 @@ int main() {
         }
     }
     fout.close();
+    std::cout<<"Complete."<<std::endl;
     return 0;
 }
