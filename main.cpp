@@ -12,8 +12,7 @@
 #include <mutex>
 #include <vector>
 #include <queue>
-#include <unistd.h> // sleep函数
-#include "float.h"
+#include <cfloat>
 #include "sphere.h"
 #include "hitable_list.h"
 #include "camera.h"
@@ -53,7 +52,7 @@ public:
 vec3 color(const ray& r, const hitable *world, int depth) {
     hit_record rec;
     // 相交检测，rec带回相交信息
-    if (world->hit(r, 0.001, MAXFLOAT, rec)) {
+    if (world->hit(r, 0.001, FLT_MAX, rec)) {
         ray scattered; // 散射光线
         vec3 attenuation; // 衰减
         // 若迭代次数没有达到上限，则计算散射光线和衰减，并递归计算颜色
@@ -141,37 +140,39 @@ hitable* scene2() {
     return new hitable_list(list,n);
 }
 
-std::mutex g_lock;
+std::mutex q1_mutex;
+std::mutex q2_mutex;
 std::queue<request> q1;
 std::queue<pixel> q2;
 
 void run(){
-    while(q1.size() > 0){
-        g_lock.lock();
+    while(true){
+        // 从q1中取出渲染请求
         request r;
         if(q1.size() > 0){
+            std::lock_guard<std::mutex> lock(q1_mutex);
             r = q1.front();
             q1.pop();
         }
-        else{
-            g_lock.unlock();
-            return;
-        }
-        g_lock.unlock();
+        else
+            break;
+
+        // 渲染
         vec3 col = pixel_render(r.x_pos, r.y_pos, r.cam, r.world);
         pixel p(col, r.x_pos, r.y_pos);
 
-        g_lock.lock();
+        // 渲染结果写入q2
+        std::lock_guard<std::mutex> lock(q2_mutex);
         q2.push(p);
-        g_lock.unlock();
     }
+    return;
 }
 
 int main() {
-    std::cout<<"Size: "<<WIDTH<<"*"<<HEIGHT<<std::endl;
-    std::cout<<"Sample: "<<SAMPLE<<std::endl;
-    std::cout<<"Depth: "<<DEPTH<<std::endl;
-    std::cout<<"Thread: "<<THREAD_NUM<<std::endl;
+    std::cout<<"Size:"<<WIDTH<<"*"<<HEIGHT<<", ";
+    std::cout<<"Sample:"<<SAMPLE<<", ";
+    std::cout<<"Depth:"<<DEPTH<<", ";
+    std::cout<<"Thread:"<<THREAD_NUM<<std::endl;
 
     hitable *world = scene1();
     // hitable *world = scene2();
@@ -187,27 +188,31 @@ int main() {
         }
     }
 
-    std::cout<<"Rendering..."<<std::endl;
+    std::cout<<"Rendering...";
 
-    // 创建初始化线程
-    std::vector<std::thread> threads;
+    // 创建工作线程组，并开始
+    std::vector<std::thread> thread_group;
     for(int i=0;i<THREAD_NUM;i++)
-        threads.push_back(std::thread(run));
+        thread_group.push_back(std::thread(run));
     
-    // 显示进度
+    // 根据q2元素数量显示进度
+    int rate,last;
     while(q1.size()>0){
-        sleep(1);
-        std::cout<<100-q1.size()/float(HEIGHT*WIDTH)*100.0<<"%"<<std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        rate = int(q2.size()/float(HEIGHT*WIDTH)*100);
+        if(rate>last+4){
+            std::cout<<"."<<std::flush;
+            last = rate;
+        }
     }
-
-    // 等待线程join
-    for(auto &t:threads){
+    std::cout<<"OK"<<std::endl;
+    
+    // 等待所有线程join
+    for(auto &t:thread_group){
         t.join();
     }
-    
-    std::cout<<"Render Complete."<<std::endl;
 
-
+    // 收到的数据可能乱序，输出到二维vector中
     std::vector<std::vector<vec3> > pic(HEIGHT, std::vector<vec3>(WIDTH));
     while(q2.size() > 0){
         pixel p = q2.front();
@@ -216,6 +221,7 @@ int main() {
     }
 
     std::cout<<"Writing Data..."<<std::endl;
+
     // 写入文件
     std::ofstream fout("image.ppm");
     fout << "P3\n" << WIDTH << " " << HEIGHT << "\n255\n";
