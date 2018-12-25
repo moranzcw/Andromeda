@@ -2,8 +2,8 @@
 //  sphere.h
 //  RayTracing
 //
-//  Created by 张成悟 on 2018/11/25.
-//  Copyright © 2018 张成悟. All rights reserved.
+//  Created by moranzcw on 2018/11/25.
+//  Copyright © 2018 moranzcw. All rights reserved.
 //
 
 #ifndef sphere_h
@@ -12,11 +12,11 @@
 #include "hitable.h"
 
 // 球，继承自hitable，实现光线相交的方法
-class sphere: public hitable  {
+class sphere: public hitable {
 public:
     // 构造函数
     sphere() {}
-    // 构造函数，参数为，球心，半径，材质
+    // 构造函数，参数为球心，半径，材质
     sphere(vec3 cen, float r, material *m) : center(cen), radius(r), mat_ptr(m)  {};
     // 相交检测
     virtual bool hit(const ray& r, float tmin, float tmax, hit_record& rec) const;

@@ -2,8 +2,8 @@
 //  hitable.h
 //  RayTracing
 //
-//  Created by 张成悟 on 2018/11/25.
-//  Copyright © 2018 张成悟. All rights reserved.
+//  Created by moranzcw on 2018/11/25.
+//  Copyright © 2018 moranzcw. All rights reserved.
 //
 
 #ifndef hitable_h
@@ -23,9 +23,9 @@ struct hit_record
 };
 
 // 所有物体继承此类，用于实现检测光线与物体相交的方法
-class hitable  {
+class hitable {
 public:
-    // 虚函数，由子类自己实现，参数：光线，t的范围，hit_record用于保存相交信息
+    // 纯虚函数，由子类自己实现，参数：光线，t的范围，hit_record用于保存相交信息
     virtual bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const = 0;
 };
 

@@ -2,8 +2,8 @@
 //  vec3.h
 //  RayTracing
 //
-//  Created by 张成悟 on 2018/11/24.
-//  Copyright © 2018 张成悟. All rights reserved.
+//  Created by moranzcw on 2018/11/24.
+//  Copyright © 2018 moranzcw. All rights reserved.
 //
 
 #ifndef vec3_h
@@ -13,9 +13,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-class vec3  {
-    
-    
+class vec3 {
 public:
     vec3() {}
     vec3(float e0, float e1, float e2) { e[0] = e0; e[1] = e1; e[2] = e2; }

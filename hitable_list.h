@@ -2,8 +2,8 @@
 //  hitable_list.h
 //  RayTracing
 //
-//  Created by 张成悟 on 2018/11/25.
-//  Copyright © 2018 张成悟. All rights reserved.
+//  Created by moranzcw on 2018/11/25.
+//  Copyright © 2018 moranzcw. All rights reserved.
 //
 
 #ifndef hitable_list_h

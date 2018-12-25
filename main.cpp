@@ -2,8 +2,8 @@
 //  main.cpp
 //  RayTracing
 //
-//  Created by 张成悟 on 2018/12/19.
-//  Copyright © 2018 张成悟. All rights reserved.
+//  Created by moranzcw on 2018/12/19.
+//  Copyright © 2018 moranzcw. All rights reserved.
 //
 
 #include <iostream>
@@ -14,6 +14,8 @@
 #include <queue>
 #include <cfloat>
 #include "sphere.h"
+#include "triangle.h"
+#include "cube.h"
 #include "hitable_list.h"
 #include "camera.h"
 #include "material.h"
@@ -22,10 +24,10 @@
 #define HEIGHT 720 // 高
 #define SAMPLE 64 // 采样率
 #define DEPTH 50 // 迭代深度
-#define LOOK_FROM vec3(0,2,15) // 相机位置
-#define LOOK_AT vec3(0,1,0) // 相机朝向
+#define LOOK_FROM vec3(0,6,15) // 相机位置
+#define LOOK_AT vec3(0,2,0) // 相机朝向
 #define DIST_TO_FOCUS (LOOK_AT-LOOK_FROM).length() // 对焦距离
-#define APERTURE 0.3 // 光圈
+#define APERTURE 0.2 // 光圈
 #define THREAD_NUM 4
 
 
@@ -140,6 +142,22 @@ hitable* scene2() {
     return new hitable_list(list,n);
 }
 
+// 生成场景
+hitable* scene3() {
+    int n = 7;
+    hitable **list = new hitable*[n];
+    list[0] = new square(vec3(100,0,100), vec3(-100,0,100), vec3(-100,0,-100), vec3(100,0,-100), new lambertian(vec3(0.7, 0.7, 0.6)));
+    list[1] = new square(vec3(100,0,95), vec3(0,0,-5), vec3(0,100,-5), vec3(100,100,95), new metal(vec3(0.7, 0.6, 0.5), 0.0));
+    list[2] = new square(vec3(-100,0,95), vec3(-100,100,95), vec3(0,100,-5), vec3(0,0,-5), new metal(vec3(0.7, 0.6, 0.5), 0.0));
+
+    list[3] = new cube(vec3(-0.5,0.75,-1.5), 1.5, new metal(vec3(0.7, 0.6, 0.5), 0.0));
+    list[4] = new sphere(vec3(-1.5,1,1.5), 1, new metal(vec3(0.8, 0.6, 0.2), 0.0));
+    list[5] = new sphere(vec3(2,1,0), 1.0, new lambertian(vec3(0.3, 0.5, 0.4)));
+    list[6] = new sphere(vec3(-0.5,2.5,-1.5), 1.0, new dielectric(1.5));
+
+    return new hitable_list(list,n);
+}
+
 std::mutex q1_mutex;
 std::mutex q2_mutex;
 std::queue<request> q1;
@@ -174,8 +192,9 @@ int main() {
     std::cout<<"Depth:"<<DEPTH<<", ";
     std::cout<<"Thread:"<<THREAD_NUM<<std::endl;
 
-    hitable *world = scene1();
+    // hitable *world = scene1();
     // hitable *world = scene2();
+    hitable *world = scene3();
     
     camera *cam = new camera(LOOK_FROM, LOOK_AT, vec3(0,1,0), 20, float(WIDTH)/float(HEIGHT), APERTURE, DIST_TO_FOCUS);
     
@@ -188,7 +207,7 @@ int main() {
         }
     }
 
-    std::cout<<"Rendering...";
+    std::cout<<"Rendering..."<<std::flush;
 
     // 创建工作线程组，并开始
     std::vector<std::thread> thread_group;
@@ -232,7 +251,5 @@ int main() {
         }
     }
     fout.close();
-
-    std::cout<<"Complete."<<std::endl;
     return 0;
 }
