@@ -9,7 +9,7 @@
 #ifndef hitable_h
 #define hitable_h
 
-#include "ray.h"
+#include "aabb.h"
 
 class material;
 
@@ -27,6 +27,8 @@ class hitable {
 public:
     // 纯虚函数，由子类自己实现，参数：光线，t的范围，hit_record用于保存相交信息
     virtual bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const = 0;
+    // 纯虚函数，返回该对象的包围盒
+    virtual bool bounding_box(aabb& box) const = 0;
 };
 
 #endif /* hitable_h */

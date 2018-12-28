@@ -22,7 +22,8 @@ public:
     };
     // 相交检测
     virtual bool hit(const ray& r, float tmin, float tmax, hit_record& rec) const;
-    
+    virtual bool bounding_box(aabb& box) const;
+
     // 数据
     triangle triangles[2];
     material *mat_ptr; // 材质
@@ -42,6 +43,14 @@ bool square::hit(const ray& r, float t_min, float t_max, hit_record& rec) const 
         }
     }
     return hit_anything;
+}
+
+bool square::bounding_box(aabb& box) const{
+    aabb temp1, temp2;
+    triangles[0].bounding_box(temp1);
+    triangles[1].bounding_box(temp2);
+    box = surrounding_box(temp1, temp2);
+    return true;
 }
 
 #endif /* square_h */

@@ -16,16 +16,17 @@
 #include "sphere.h"
 #include "triangle.h"
 #include "cube.h"
+#include "bvh.h"
 #include "hitable_list.h"
 #include "camera.h"
 #include "material.h"
 
-#define WIDTH 1280 // 宽
-#define HEIGHT 720 // 高
+#define WIDTH 1280/3 // 宽
+#define HEIGHT 720/3 // 高
 #define SAMPLE 64 // 采样率
 #define DEPTH 50 // 迭代深度
-#define LOOK_FROM vec3(0,6,15) // 相机位置
-#define LOOK_AT vec3(0,2,0) // 相机朝向
+#define LOOK_FROM vec3(0,1,15) // 相机位置
+#define LOOK_AT vec3(0,1,0) // 相机朝向
 #define DIST_TO_FOCUS (LOOK_AT-LOOK_FROM).length() // 对焦距离
 #define APERTURE 0.2 // 光圈
 #define THREAD_NUM 4
@@ -95,7 +96,8 @@ vec3 pixel_render(int x_pos, int y_pos, const camera *cam, const hitable *world)
 hitable* scene1() {
     int n = 500;
     hitable **list = new hitable*[n+1];
-    list[0] =  new sphere(vec3(0,-1000,0), 1000, new lambertian(vec3(0.5, 0.5, 0.5)));
+    // 地面
+    list[0] = new square(vec3(100,0,100), vec3(-100,0,100), vec3(-100,0,-100), vec3(100,0,-100), new lambertian(vec3(0.5, 0.5, 0.5)));
     int i = 1;
     // 在-11<x<11，-11<z<11的区域内生成n个小球
     for (int a = -11; a < 11; a++) {
@@ -126,20 +128,20 @@ hitable* scene1() {
     list[i++] = new sphere(vec3(-4, 1, 0), 1.0, new lambertian(vec3(0.4, 0.2, 0.1)));
     list[i++] = new sphere(vec3(4, 1, 0), 1.0, new dielectric(1.5));
     
-    return new hitable_list(list,i);
+    return new bvh_node(list,i);
 }
 
 // 生成场景
 hitable* scene2() {
-    // 五个球
+    // 四个球
     int n = 5;
     hitable **list = new hitable*[n];
-    list[0] = new sphere(vec3(0, 1, 0), 1.0, new lambertian(vec3(0.1, 0.2, 0.5)));
-    list[1] = new sphere(vec3(0,-100,0), 100, new lambertian(vec3(0.7, 0.4, 0.4)));
+    list[0] = new square(vec3(100,0,100), vec3(-100,0,100), vec3(-100,0,-100), vec3(100,0,-100), new lambertian(vec3(0.7, 0.4, 0.4)));
+    list[1] = new sphere(vec3(0, 1, 0), 1.0, new lambertian(vec3(0.1, 0.2, 0.5)));
     list[2] = new sphere(vec3(2, 1, 0), 1.0, new metal(vec3(0.8, 0.6, 0.2), 0.0));
     list[3] = new sphere(vec3(-2, 1, 0), 1.0, new dielectric(1.5));
     list[4] = new sphere(vec3(-2, 1, 0), 0.8, new dielectric(1.5));
-    return new hitable_list(list,n);
+    return new bvh_node(list,n);
 }
 
 // 生成场景
@@ -155,7 +157,7 @@ hitable* scene3() {
     list[5] = new sphere(vec3(2,1,0), 1.0, new lambertian(vec3(0.3, 0.5, 0.4)));
     list[6] = new sphere(vec3(-0.5,2.5,-1.5), 1.0, new dielectric(1.5));
 
-    return new hitable_list(list,n);
+    return new bvh_node(list,n);
 }
 
 std::mutex q1_mutex;

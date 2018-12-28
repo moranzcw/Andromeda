@@ -20,12 +20,19 @@ public:
     sphere(vec3 cen, float r, material *m) : center(cen), radius(r), mat_ptr(m)  {};
     // 相交检测
     virtual bool hit(const ray& r, float tmin, float tmax, hit_record& rec) const;
+    // 包围盒
+    virtual bool bounding_box(aabb& box) const;
     
     // 数据
     vec3 center; // 球心
     float radius; // 半径
     material *mat_ptr; // 材质
 };
+
+bool sphere::bounding_box(aabb& box) const {
+    box = aabb(center - vec3(radius, radius, radius), center + vec3(radius, radius, radius));
+    return true;
+}
 
 bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec) const {
     // 设ray端点到球心的距离等于半径，即可解出交点

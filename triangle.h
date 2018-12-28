@@ -23,7 +23,8 @@ public:
     };
     // 相交检测
     virtual bool hit(const ray& r, float tmin, float tmax, hit_record& rec) const;
-    
+    virtual bool bounding_box(aabb& box) const;
+
     // 数据
     vec3 vertex[3]; // 顶点
     vec3 normal; // 法线
@@ -32,24 +33,19 @@ public:
 
 // Determine whether a ray intersect with a triangle
 // Parameters
-// orig: origin of the ray
-// dir: direction of the ray
-// v0, v1, v2: vertices of triangle
-// t(out): weight of the intersection for the ray
-// u(out), v(out): barycentric coordinate of intersection
 
-bool IntersectTriangle(const vec3& orig, const vec3& dir,
-    const vec3& v0, const vec3& v1, const vec3& v2,
-    float* t, float* u, float* v)
-{
+bool triangle::hit(const ray& r, float t_min, float t_max, hit_record& rec) const {
+    float t,u,v;
+    bool is_hit = false;
+
     // E1
-    vec3 E1 = v1 - v0;
+    vec3 E1 = vertex[1] - vertex[0];
 
     // E2
-    vec3 E2 = v2 - v0;
+    vec3 E2 = vertex[2] - vertex[0];
 
     // P
-    vec3 P = cross(dir, E2);
+    vec3 P = cross(r.direction(), E2);
 
     // determinant
     float det = dot(E1, P);
@@ -58,11 +54,11 @@ bool IntersectTriangle(const vec3& orig, const vec3& dir,
     vec3 T;
     if( det >0 )
     {
-        T = orig - v0;
+        T = r.origin() - vertex[0];
     }
     else
     {
-        T = v0 - orig;
+        T = vertex[0] - r.origin();
         det = -det;
     }
 
@@ -71,41 +67,50 @@ bool IntersectTriangle(const vec3& orig, const vec3& dir,
         return false;
 
     // Calculate u and make sure u <= 1
-    *u = dot(T, P);
-    if( *u < 0.0f || *u > det )
+    u = dot(T, P);
+    if( u < 0.0f || u > det )
         return false;
 
     // Q
     vec3 Q = cross(T, E1);
 
     // Calculate v and make sure u + v <= 1
-    *v = dot(dir, Q);
-    if( *v < 0.0f || *u + *v > det )
+    v = dot(r.direction(), Q);
+    if( v < 0.0f || u + v > det )
         return false;
 
     // Calculate t, scale parameters, ray intersects triangle
-    *t = dot(E2, Q);
+    t = dot(E2, Q);
 
     float fInvDet = 1.0f / det;
-    *t *= fInvDet;
-    *u *= fInvDet;
-    *v *= fInvDet;
+    t *= fInvDet;
+    u *= fInvDet;
+    v *= fInvDet;
 
+    if(t <= t_min || t >= t_max)
+        return false;
+
+    rec.t = t;
+    rec.p = r.point_at_parameter(rec.t);
+    rec.normal = normal;
+    rec.mat_ptr = mat_ptr;
+        
     return true;
 }
 
-bool triangle::hit(const ray& r, float t_min, float t_max, hit_record& rec) const {
-    float t,u,v;
-    bool is_hit = false;
-    is_hit = IntersectTriangle(r.origin(), r.direction(), vertex[0], vertex[1], vertex[2], &t, &u, &v);
-    if(is_hit && t < t_max && t > t_min){
-        rec.t = t;
-        rec.p = r.point_at_parameter(rec.t);
-        rec.normal = normal;
-        rec.mat_ptr = mat_ptr;
-        return true;
-    }
-    return false;
+bool triangle::bounding_box(aabb& box) const{
+    vec3 _min, _max;
+    _min[0] = ffmin(vertex[0].x(), ffmin(vertex[1].x(), vertex[2].x()));
+    _min[1] = ffmin(vertex[0].y(), ffmin(vertex[1].y(), vertex[2].y()));
+    _min[2] = ffmin(vertex[0].z(), ffmin(vertex[1].z(), vertex[2].z()));
+
+    // 加0.1是为了防止盒子没有体积
+    _max[0] = ffmax(vertex[0].x(), ffmax(vertex[1].x(), vertex[2].x()))+0.1;
+    _max[1] = ffmax(vertex[0].y(), ffmax(vertex[1].y(), vertex[2].y()))+0.1;
+    _max[2] = ffmax(vertex[0].z(), ffmax(vertex[1].z(), vertex[2].z()))+0.1;
+
+    box = aabb(_min, _max);
+    return true;
 }
 
 #endif /* triangle_h */

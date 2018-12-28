@@ -13,7 +13,7 @@
 #include "square.h"
 
 // 存放hitable对象的数组
-class cube: public hitable  {
+class cube: public hitable {
 public:
     // 构造函数
     cube() {}
@@ -30,26 +30,21 @@ public:
 
         // front
         squares[0] = square(vertex[0], vertex[1], vertex[2], vertex[3], mat_ptr);
-
         // up
         squares[1] = square(vertex[0], vertex[3], vertex[7], vertex[4], mat_ptr);
-
         // left
         squares[2] = square(vertex[2], vertex[6], vertex[7], vertex[3], mat_ptr);
-
         // right
         squares[3] = square(vertex[1], vertex[0], vertex[4], vertex[5], mat_ptr);
-
         // bottom
         squares[4] = square(vertex[1], vertex[5], vertex[6], vertex[2], mat_ptr);
-
         // back
         squares[5] = square(vertex[5], vertex[4], vertex[7], vertex[6], mat_ptr);
     }
     
     //与所有triangle对象进行hit操作，求出距离最近的一组记录
     virtual bool hit(const ray& r, float tmin, float tmax, hit_record& rec) const;
-    
+    virtual bool bounding_box(aabb& box) const;
     // 数据
     vec3 center; // 中心
     float scale; // 边长
@@ -73,4 +68,22 @@ bool cube::hit(const ray& r, float t_min, float t_max, hit_record& rec) const {
     return hit_anything;
 }
 
+bool cube::bounding_box(aabb& box) const{
+    aabb temp_box;
+    bool flag = squares[0].bounding_box(temp_box);
+    if (!flag)
+        return false;
+    else 
+        box = temp_box;
+    
+    // 与所有对象求包围盒
+    for (int i=1; i<6; i++) {
+        if(squares[0].bounding_box(temp_box)) {
+            box = surrounding_box(box, temp_box);
+        }
+        else
+            return false;
+    }
+    return true;
+}
 #endif /* cube_h */
