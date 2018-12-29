@@ -34,6 +34,14 @@ bool sphere::bounding_box(aabb& box) const {
     return true;
 }
 
+// 获取球体的uv坐标
+void get_sphere_uv(const vec3& p, float& u, float& v) {
+    float phi = atan2(p.z(), p.x());
+    float theta = asin(p.y());
+    u = 1-(phi + M_PI) / (2*M_PI);
+    v = (theta + M_PI/2) / M_PI;
+}
+
 bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec) const {
     // 设ray端点到球心的距离等于半径，即可解出交点
     // 即dot((A + t*B - C),(A + t*B - C)) = R*R
@@ -52,6 +60,7 @@ bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec) const 
         if (temp < t_max && temp > t_min) {
             rec.t = temp; // t
             rec.p = r.point_at_parameter(rec.t); // 交点
+            get_sphere_uv((rec.p-center)/radius, rec.u, rec.v); // 纹理坐标
             rec.normal = (rec.p - center) / radius; // 法线，rec.p - center求出法线方向，除以radius归一化
             rec.mat_ptr = mat_ptr; // 材质
             return true;
@@ -60,6 +69,7 @@ bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec) const 
         if (temp < t_max && temp > t_min) {
             rec.t = temp;
             rec.p = r.point_at_parameter(rec.t);
+            get_sphere_uv((rec.p-center)/radius, rec.u, rec.v);
             rec.normal = (rec.p - center) / radius;
             rec.mat_ptr = mat_ptr;
             return true;

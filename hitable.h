@@ -17,6 +17,8 @@ class material;
 struct hit_record
 {
     float t; // 视点到交点的距离（即ray中的参数t）
+    float u; // 纹理坐标u
+    float v; // 纹理坐标v
     vec3 p; // 交点
     vec3 normal; // 法线
     material *mat_ptr; // 材质

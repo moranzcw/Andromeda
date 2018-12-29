@@ -92,6 +92,8 @@ bool triangle::hit(const ray& r, float t_min, float t_max, hit_record& rec) cons
 
     rec.t = t;
     rec.p = r.point_at_parameter(rec.t);
+    rec.u = u;
+    rec.v = v;
     rec.normal = normal;
     rec.mat_ptr = mat_ptr;
         

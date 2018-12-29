@@ -21,8 +21,8 @@
 #include "camera.h"
 #include "material.h"
 
-#define WIDTH 1280/3 // 宽
-#define HEIGHT 720/3 // 高
+#define WIDTH 1280 // 宽
+#define HEIGHT 720 // 高
 #define SAMPLE 64 // 采样率
 #define DEPTH 50 // 迭代深度
 #define LOOK_FROM vec3(0,1,15) // 相机位置
@@ -97,7 +97,8 @@ hitable* scene1() {
     int n = 500;
     hitable **list = new hitable*[n+1];
     // 地面
-    list[0] = new square(vec3(100,0,100), vec3(-100,0,100), vec3(-100,0,-100), vec3(100,0,-100), new lambertian(vec3(0.5, 0.5, 0.5)));
+    texture *checker = new checker_texture(new constant_texture(vec3(0.2,0.3, 0.1)), new constant_texture(vec3(0.9, 0.9, 0.9)));
+    list[0] = new square(vec3(100,0,100), vec3(-100,0,100), vec3(-100,0,-100), vec3(100,0,-100), new lambertian(checker));
     int i = 1;
     // 在-11<x<11，-11<z<11的区域内生成n个小球
     for (int a = -11; a < 11; a++) {
@@ -106,11 +107,11 @@ hitable* scene1() {
             // z坐标和x坐标加一些随机偏移，y坐标为0.2，即球心离地0.2，刚好等于半径
             vec3 center(a+0.9*drand48(),0.2,b+0.9*drand48());
             // 避开大球坐标
-            if ((center-vec3(4, 0.2, 0)).length() > 0.9
+            if ((center-vec3(3, 0.2, 0)).length() > 0.9
                 && (center-vec3(0, 0.2, 0)).length() > 0.9
-                && (center-vec3(-4, 0.2, 0)).length() > 0.9) {
+                && (center-vec3(-3, 0.2, 0)).length() > 0.9) {
                 if (choose_mat < 0.6) {  // 0.6概率的漫反射材质
-                    list[i++] = new sphere(center, 0.2, new lambertian(vec3(0.9*drand48(), 0.3, 0.2)));
+                    list[i++] = new sphere(center, 0.2, new lambertian(new constant_texture(vec3(0.9*drand48(), 0.3, 0.2))));
                 }
                 else if (choose_mat < 0.9) { // 0.3概率的金属材质
                     list[i++] = new sphere(center, 0.2,
@@ -125,8 +126,8 @@ hitable* scene1() {
     
     // 三个大球
     list[i++] = new sphere(vec3(0, 1, 0), 1.0, new metal(vec3(0.7, 0.6, 0.5), 0.0));
-    list[i++] = new sphere(vec3(-4, 1, 0), 1.0, new lambertian(vec3(0.4, 0.2, 0.1)));
-    list[i++] = new sphere(vec3(4, 1, 0), 1.0, new dielectric(1.5));
+    list[i++] = new sphere(vec3(-3, 1, 0), 1.0, new lambertian(new constant_texture(vec3(0.4, 0.2, 0.1))));
+    list[i++] = new sphere(vec3(3, 1, 0), 1.0, new dielectric(1.5));
     
     return new bvh_node(list,i);
 }
@@ -136,8 +137,8 @@ hitable* scene2() {
     // 四个球
     int n = 5;
     hitable **list = new hitable*[n];
-    list[0] = new square(vec3(100,0,100), vec3(-100,0,100), vec3(-100,0,-100), vec3(100,0,-100), new lambertian(vec3(0.7, 0.4, 0.4)));
-    list[1] = new sphere(vec3(0, 1, 0), 1.0, new lambertian(vec3(0.1, 0.2, 0.5)));
+    list[0] = new square(vec3(100,0,100), vec3(-100,0,100), vec3(-100,0,-100), vec3(100,0,-100), new lambertian(new constant_texture(vec3(0.7, 0.4, 0.4))));
+    list[1] = new sphere(vec3(0, 1, 0), 1.0, new lambertian(new constant_texture(vec3(0.1, 0.2, 0.5))));
     list[2] = new sphere(vec3(2, 1, 0), 1.0, new metal(vec3(0.8, 0.6, 0.2), 0.0));
     list[3] = new sphere(vec3(-2, 1, 0), 1.0, new dielectric(1.5));
     list[4] = new sphere(vec3(-2, 1, 0), 0.8, new dielectric(1.5));
@@ -148,16 +149,26 @@ hitable* scene2() {
 hitable* scene3() {
     int n = 7;
     hitable **list = new hitable*[n];
-    list[0] = new square(vec3(100,0,100), vec3(-100,0,100), vec3(-100,0,-100), vec3(100,0,-100), new lambertian(vec3(0.7, 0.7, 0.6)));
+    list[0] = new square(vec3(100,0,100), vec3(-100,0,100), vec3(-100,0,-100), vec3(100,0,-100), new lambertian(new constant_texture(vec3(0.7, 0.7, 0.6))));
     list[1] = new square(vec3(100,0,95), vec3(0,0,-5), vec3(0,100,-5), vec3(100,100,95), new metal(vec3(0.7, 0.6, 0.5), 0.0));
     list[2] = new square(vec3(-100,0,95), vec3(-100,100,95), vec3(0,100,-5), vec3(0,0,-5), new metal(vec3(0.7, 0.6, 0.5), 0.0));
 
     list[3] = new cube(vec3(-0.5,0.75,-1.5), 1.5, new metal(vec3(0.7, 0.6, 0.5), 0.0));
     list[4] = new sphere(vec3(-1.5,1,1.5), 1, new metal(vec3(0.8, 0.6, 0.2), 0.0));
-    list[5] = new sphere(vec3(2,1,0), 1.0, new lambertian(vec3(0.3, 0.5, 0.4)));
+    list[5] = new sphere(vec3(2,1,0), 1.0, new lambertian(new constant_texture(vec3(0.3, 0.5, 0.4))));
     list[6] = new sphere(vec3(-0.5,2.5,-1.5), 1.0, new dielectric(1.5));
 
     return new bvh_node(list,n);
+}
+
+hitable *two_spheres() {
+    texture *checker = new checker_texture(new constant_texture(vec3(0.2,0.3, 0.1)), new constant_texture(vec3(0.9, 0.9, 0.9)));
+    int n = 2;
+    hitable **list = new hitable*[2];
+    list[0] =  new sphere(vec3(0,-10, 0), 10, new lambertian(checker));
+    list[1] =  new sphere(vec3(0, 10, 0), 10, new lambertian(checker));
+
+    return new bvh_node(list,2);
 }
 
 std::mutex q1_mutex;
@@ -194,9 +205,10 @@ int main() {
     std::cout<<"Depth:"<<DEPTH<<", ";
     std::cout<<"Thread:"<<THREAD_NUM<<std::endl;
 
-    // hitable *world = scene1();
+    hitable *world = scene1();
     // hitable *world = scene2();
-    hitable *world = scene3();
+    // hitable *world = scene3();
+    // hitable *world = two_spheres();
     
     camera *cam = new camera(LOOK_FROM, LOOK_AT, vec3(0,1,0), 20, float(WIDTH)/float(HEIGHT), APERTURE, DIST_TO_FOCUS);
     
@@ -242,7 +254,6 @@ int main() {
     }
 
     std::cout<<"Writing Data..."<<std::endl;
-
     // 写入文件
     std::ofstream fout("image.ppm");
     fout << "P3\n" << WIDTH << " " << HEIGHT << "\n255\n";
@@ -253,5 +264,6 @@ int main() {
         }
     }
     fout.close();
+    std::cout<<"Complete."<<std::endl;
     return 0;
 }
