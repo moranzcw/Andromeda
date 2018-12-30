@@ -53,9 +53,23 @@ class material  {
 public:
     // 散射函数，虚函数，需要在子类中实现，参数：入射光线，交点信息，衰减，散射
     virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& attenuation, ray& scattered) const = 0;
+    // 自发光
+    virtual vec3 emitted(float u, float v, const vec3& p) const {
+        return vec3(0,0,0);
+    }
 };
 
-// 兰伯特光照材质，即漫反射材质
+// 漫射光源材质
+class diffuse_light : public material  {
+    public:
+        diffuse_light(texture *a) : emit(a) {}
+        virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& attenuation, ray& scattered) const { return false; }
+        virtual vec3 emitted(float u, float v, const vec3& p) const { return emit->value(u, v, p); }
+        texture *emit;
+};
+
+
+// 漫反射材质
 class lambertian : public material {
 public:
     // 构造函数，传入反射率

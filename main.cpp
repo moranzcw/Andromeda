@@ -20,15 +20,21 @@
 #include "hitable_list.h"
 #include "camera.h"
 #include "material.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 #define WIDTH 1280 // 宽
 #define HEIGHT 720 // 高
-#define SAMPLE 64 // 采样率
+#define SAMPLE 2000 // 采样率
 #define DEPTH 50 // 迭代深度
-#define LOOK_FROM vec3(0,1,15) // 相机位置
-#define LOOK_AT vec3(0,1,0) // 相机朝向
+// #define LOOK_FROM vec3(0,1,15) // 相机位置
+// #define LOOK_AT vec3(0,1,0) // 相机朝向
+#define LOOK_FROM vec3(-200, 280, 1200) // 相机位置
+#define LOOK_AT vec3(170,320,0) // 相机朝向
 #define DIST_TO_FOCUS (LOOK_AT-LOOK_FROM).length() // 对焦距离
-#define APERTURE 0.2 // 光圈
+#define APERTURE 0.0 // 光圈
+// #define FOV 20
+#define FOV 33
 #define THREAD_NUM 4
 
 
@@ -58,20 +64,22 @@ vec3 color(const ray& r, const hitable *world, int depth) {
     if (world->hit(r, 0.001, FLT_MAX, rec)) {
         ray scattered; // 散射光线
         vec3 attenuation; // 衰减
+        vec3 emitted = rec.mat_ptr->emitted(rec.u, rec.v, rec.p); //自发光
         // 若迭代次数没有达到上限，则计算散射光线和衰减，并递归计算颜色
         if (depth < DEPTH && rec.mat_ptr->scatter(r, rec, attenuation, scattered)) {
-            return attenuation*color(scattered, world, depth+1);
+            return emitted + attenuation*color(scattered, world, depth+1);
         }
         else {
             //若迭代次数已达上限，说明光线散射多次依然没有到达背景，返回黑色
-            return vec3(0,0,0);
+            return emitted + vec3(0,0,0);
         }
     }
     else {
         // 若没有相交，则按y坐标计算背景颜色
-        vec3 unit_direction = unit_vector(r.direction());
-        float t = 0.5*(unit_direction.y() + 1.0);
-        return (1.0-t)*vec3(1.0, 1.0, 1.0) + t*vec3(0.5, 0.7, 1.0);
+        // vec3 unit_direction = unit_vector(r.direction());
+        // float t = 0.5*(unit_direction.y() + 1.0);
+        // return (1.0-t)*vec3(1.0, 1.0, 1.0) + t*vec3(0.5, 0.7, 1.0);
+        return vec3(0,0,0);
     }
 }
 
@@ -162,13 +170,102 @@ hitable* scene3() {
 }
 
 hitable *two_spheres() {
-    texture *checker = new checker_texture(new constant_texture(vec3(0.2,0.3, 0.1)), new constant_texture(vec3(0.9, 0.9, 0.9)));
     int n = 2;
     hitable **list = new hitable*[2];
+
+    texture *checker = new checker_texture(new constant_texture(vec3(0.2,0.3, 0.1)), new constant_texture(vec3(0.9, 0.9, 0.9)));
     list[0] =  new sphere(vec3(0,-10, 0), 10, new lambertian(checker));
     list[1] =  new sphere(vec3(0, 10, 0), 10, new lambertian(checker));
 
-    return new bvh_node(list,2);
+    return new bvh_node(list,n);
+}
+
+hitable *perlin_spheres() {
+    int n = 2;
+    hitable **list = new hitable*[2];
+
+    texture *pertext = new noise_texture(4);
+    list[0] = new square(vec3(100,0,100), vec3(-100,0,100), vec3(-100,0,-100), vec3(100,0,-100),new lambertian( pertext ));
+    list[1] = new sphere(vec3(0, 2, 0), 2, new lambertian( pertext ));
+    
+    return new bvh_node(list,n);
+}
+
+hitable *image_scene() {
+    int n = 4;
+    hitable **list = new hitable*[3];
+
+    texture *checker = new checker_texture(new constant_texture(vec3(0.2,0.3, 0.1)), new constant_texture(vec3(0.9, 0.9, 0.9)));
+    list[0] = new square(vec3(100,0,100), vec3(-100,0,100), vec3(-100,0,-100), vec3(100,0,-100),new lambertian( checker ));
+    
+    int nx, ny, nn;
+    unsigned char *tex_data = stbi_load("../mars_map.jpg", &nx, &ny, &nn, 0);
+    material *mat =  new lambertian(new image_texture(tex_data, nx, ny));
+    list[1] = new sphere(vec3(-2.5, 1, 0), 1, mat);
+
+    // texture *pertext = new noise_texture(4);
+    // list[2] = new sphere(vec3(0, 1, 0), 1, new lambertian( pertext ));
+
+    unsigned char *tex_data2 = stbi_load("../jupiter_map.jpg", &nx, &ny, &nn, 0);
+    material *mat2 =  new lambertian(new image_texture(tex_data2, nx, ny));
+    list[2] = new sphere(vec3(0, 1, 0), 1, mat2);
+
+    unsigned char *tex_data3 = stbi_load("../marble.jpg", &nx, &ny, &nn, 0);
+    material *mat3 =  new lambertian(new image_texture(tex_data3, nx, ny));
+    list[3] = new cube(vec3(2.5, 1, 0), 1.5, mat3);
+
+    return new bvh_node(list,n);
+}
+
+hitable *simple_light() {
+    hitable **list = new hitable*[3];
+
+    texture *checker = new checker_texture(new constant_texture(vec3(0.2,0.3, 0.1)), new constant_texture(vec3(0.9, 0.9, 0.9)));
+    list[0] = new square(vec3(100,0,100), vec3(-100,0,100), vec3(-100,0,-100), vec3(100,0,-100),new lambertian( checker ));
+    
+    texture *pertext = new noise_texture(4);
+    list[1] =  new sphere(vec3(0, 1, 0), 1, new lambertian( pertext ));
+
+    list[2] =  new square(vec3(2,2,-1), vec3(2,2,1), vec3(2,0,1), vec3(2,0,-1), new diffuse_light(new constant_texture(vec3(4,4,4))));
+    return new bvh_node(list,3);
+}
+
+hitable *final() {
+    hitable **list = new hitable*[500];
+    int l = 0;
+
+    material *light = new diffuse_light( new constant_texture(vec3(7, 7, 7)) );
+    list[l++] = new square(vec3(-150,550,412), vec3(150,550,412), vec3(150,550,147), vec3(-150,550,147), light);
+
+    int nx, ny, nn; 
+    unsigned char *ground_tex = stbi_load("../marble.jpg", &nx, &ny, &nn, 0);
+    material *ground =  new lambertian(new image_texture(ground_tex, nx, ny));
+    int nb = 20;
+    for (int i = 0; i < nb; i++) {
+        for (int j = 0; j < nb; j++) {
+            float w = 100;
+            list[l++] = new cube(vec3(-1000+i*w+w/2, w*(drand48()+0.01)/2, -1000+j*w+w/2),100, ground);
+        }
+    }
+
+    unsigned char *tex_data = stbi_load("../mars_map.jpg", &nx, &ny, &nn, 0);
+    material *mat =  new lambertian(new image_texture(tex_data, nx, ny));
+    list[l++] = new sphere(vec3(-50, 400, 70), 70, mat);
+
+    unsigned char *tex_data2 = stbi_load("../jupiter_map.jpg", &nx, &ny, &nn, 0);
+    material *mat2 =  new lambertian(new image_texture(tex_data2, nx, ny));
+    list[l++] = new sphere(vec3(210, 270, 230), 80, mat2);
+
+
+    texture *pertext = new noise_texture(0.1);
+    list[l++] = new sphere(vec3(130, 450, 100), 80, new lambertian(pertext));
+    
+    list[l++] = new sphere(vec3(50, 195, 220), 100, new dielectric(1.5));
+    list[l++] = new sphere(vec3(-190, 250, 145), 80, new metal(vec3(0.8, 0.8, 0.9), 0.1));
+
+    list[l++] = new square(vec3(310,500,0), vec3(310,500,600), vec3(310,140,600), vec3(310,140,0), new metal(vec3(0.7, 0.6, 0.5), 0.0));
+
+    return new bvh_node(list,l);
 }
 
 std::mutex q1_mutex;
@@ -205,12 +302,16 @@ int main() {
     std::cout<<"Depth:"<<DEPTH<<", ";
     std::cout<<"Thread:"<<THREAD_NUM<<std::endl;
 
-    hitable *world = scene1();
+    // hitable *world = scene1();
     // hitable *world = scene2();
     // hitable *world = scene3();
     // hitable *world = two_spheres();
+    // hitable *world = perlin_spheres();
+    // hitable *world = image_scene();
+    // hitable *world = simple_light();
+    hitable *world = final();
     
-    camera *cam = new camera(LOOK_FROM, LOOK_AT, vec3(0,1,0), 20, float(WIDTH)/float(HEIGHT), APERTURE, DIST_TO_FOCUS);
+    camera *cam = new camera(LOOK_FROM, LOOK_AT, vec3(0,1,0), FOV, float(WIDTH)/float(HEIGHT), APERTURE, DIST_TO_FOCUS);
     
     request r(cam, world, 0, 0);
     for (int y=0; y<HEIGHT; y++) {
@@ -260,6 +361,9 @@ int main() {
     for (int y = HEIGHT-1; y >= 0; y--) {
         for (int x = 0; x < WIDTH; x++) {
             vec3 &col = pic[y][x];
+            col[0] = col[0]>1?1:col[0];
+            col[1] = col[1]>1?1:col[1];
+            col[2] = col[2]>1?1:col[2];
             fout << int(255.99*col[0]) << " " << int(255.99*col[1]) << " " << int(255.99*col[2]) << "\n";
         }
     }

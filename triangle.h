@@ -40,27 +40,21 @@ bool triangle::hit(const ray& r, float t_min, float t_max, hit_record& rec) cons
 
     // E1
     vec3 E1 = vertex[1] - vertex[0];
-
     // E2
     vec3 E2 = vertex[2] - vertex[0];
-
     // P
     vec3 P = cross(r.direction(), E2);
-
     // determinant
     float det = dot(E1, P);
-
     // keep det > 0, modify T accordingly
-    vec3 T;
-    if( det >0 )
-    {
-        T = r.origin() - vertex[0];
-    }
-    else
-    {
-        T = vertex[0] - r.origin();
-        det = -det;
-    }
+    
+    // 剔除背面
+    if(det > 0)
+        return false;
+
+    vec3 T = vertex[0] - r.origin();
+    det = -det;
+    
 
     // If determinant is near zero, ray lies in plane of triangle
     if( det < 0.0001f )
@@ -83,17 +77,12 @@ bool triangle::hit(const ray& r, float t_min, float t_max, hit_record& rec) cons
     t = dot(E2, Q);
 
     float fInvDet = 1.0f / det;
-    t *= fInvDet;
-    u *= fInvDet;
-    v *= fInvDet;
-
-    if(t <= t_min || t >= t_max)
+    rec.t = t*fInvDet;
+    if(rec.t <= t_min || rec.t >= t_max)
         return false;
-
-    rec.t = t;
     rec.p = r.point_at_parameter(rec.t);
-    rec.u = u;
-    rec.v = v;
+    rec.u = u*fInvDet;
+    rec.v = v*fInvDet;
     rec.normal = normal;
     rec.mat_ptr = mat_ptr;
         

@@ -29,17 +29,17 @@ public:
         vertex[7] =  center + 0.5 * scale * vec3(-1,1,-1);
 
         // front
-        squares[0] = square(vertex[0], vertex[1], vertex[2], vertex[3], mat_ptr);
+        squares[0] = square(vertex[3], vertex[0], vertex[1], vertex[2], mat_ptr);
         // up
-        squares[1] = square(vertex[0], vertex[3], vertex[7], vertex[4], mat_ptr);
+        squares[1] = square(vertex[7], vertex[4], vertex[0], vertex[3], mat_ptr);
         // left
-        squares[2] = square(vertex[2], vertex[6], vertex[7], vertex[3], mat_ptr);
+        squares[2] = square(vertex[7], vertex[3], vertex[2], vertex[6], mat_ptr);
         // right
-        squares[3] = square(vertex[1], vertex[0], vertex[4], vertex[5], mat_ptr);
+        squares[3] = square(vertex[0], vertex[4], vertex[5], vertex[1], mat_ptr);
         // bottom
-        squares[4] = square(vertex[1], vertex[5], vertex[6], vertex[2], mat_ptr);
+        squares[4] = square(vertex[2], vertex[1], vertex[5], vertex[6], mat_ptr);
         // back
-        squares[5] = square(vertex[5], vertex[4], vertex[7], vertex[6], mat_ptr);
+        squares[5] = square(vertex[4], vertex[7], vertex[6], vertex[5], mat_ptr);
     }
     
     //与所有triangle对象进行hit操作，求出距离最近的一组记录

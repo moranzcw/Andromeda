@@ -17,6 +17,10 @@ public:
     square() {}
     // 构造函数，参数为三个顶点，材质
     square(vec3 v1, vec3 v2, vec3 v3, vec3 v4, material *m) : mat_ptr(m) {
+        vertex[0] = v1;
+        vertex[1] = v2;
+        vertex[2] = v3;
+        vertex[3] = v4;
         triangles[0] = triangle(v1,v2,v3,mat_ptr);
         triangles[1] = triangle(v1,v3,v4,mat_ptr);
     };
@@ -25,6 +29,7 @@ public:
     virtual bool bounding_box(aabb& box) const;
 
     // 数据
+    vec3 vertex[4];
     triangle triangles[2];
     material *mat_ptr; // 材质
 };
@@ -40,6 +45,13 @@ bool square::hit(const ray& r, float t_min, float t_max, hit_record& rec) const 
             hit_anything = true;
             closest_so_far = temp_rec.t;
             rec = temp_rec;
+
+            //  计算uv坐标
+            vec3 e1 = vertex[2]-vertex[3];
+            vec3 e2 = vertex[0]-vertex[3];
+            vec3 pp = rec.p-vertex[3];
+            rec.u = dot(pp,e1)/(e1.length()*e1.length());
+            rec.v = dot(pp,e2)/(e2.length()*e2.length());
         }
     }
     return hit_anything;
