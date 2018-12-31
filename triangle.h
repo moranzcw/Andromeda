@@ -46,16 +46,16 @@ bool triangle::hit(const ray& r, float t_min, float t_max, hit_record& rec) cons
     vec3 P = cross(r.direction(), E2);
     // determinant
     float det = dot(E1, P);
+
     // keep det > 0, modify T accordingly
+    vec3 T;
+    if(det > 0){
+        T = r.origin() - vertex[0];
+    }else{
+        T = vertex[0] - r.origin();
+        det = -det;
+    }
     
-    // 剔除背面
-    if(det > 0)
-        return false;
-
-    vec3 T = vertex[0] - r.origin();
-    det = -det;
-    
-
     // If determinant is near zero, ray lies in plane of triangle
     if( det < 0.0001f )
         return false;

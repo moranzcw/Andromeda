@@ -25,16 +25,17 @@
 
 #define WIDTH 1280 // 宽
 #define HEIGHT 720 // 高
-#define SAMPLE 2000 // 采样率
+// #define SAMPLE 2000 // 采样率
+#define SAMPLE 100 // 采样率
 #define DEPTH 50 // 迭代深度
-// #define LOOK_FROM vec3(0,1,15) // 相机位置
-// #define LOOK_AT vec3(0,1,0) // 相机朝向
-#define LOOK_FROM vec3(-200, 280, 1200) // 相机位置
-#define LOOK_AT vec3(170,320,0) // 相机朝向
+#define LOOK_FROM vec3(4,6,15) // 相机位置
+#define LOOK_AT vec3(0,1,0) // 相机朝向
+// #define LOOK_FROM vec3(-200, 280, 1200) // 相机位置
+// #define LOOK_AT vec3(170,320,0) // 相机朝向
 #define DIST_TO_FOCUS (LOOK_AT-LOOK_FROM).length() // 对焦距离
 #define APERTURE 0.0 // 光圈
-// #define FOV 20
-#define FOV 33
+#define FOV 20
+// #define FOV 33
 #define THREAD_NUM 4
 
 
@@ -230,6 +231,36 @@ hitable *simple_light() {
     return new bvh_node(list,3);
 }
 
+
+// 生成场景
+hitable* scene4() {
+    int n = 8;
+    hitable **list = new hitable*[n];
+    int nx, ny, nn; 
+    unsigned char *ground_tex = stbi_load("../marble.jpg", &nx, &ny, &nn, 0);
+    material *ground =  new lambertian(new image_texture(ground_tex, nx, ny));
+    list[0] = new square(vec3(10,0,10), vec3(-10,0,10), vec3(-10,0,-10), vec3(10,0,-10), ground);
+    list[1] = new square(vec3(100,0,95), vec3(0,0,-5), vec3(0,100,-5), vec3(100,100,95), new metal(vec3(0.7, 0.6, 0.5), 0.0));
+    list[2] = new square(vec3(-100,0,95), vec3(-100,100,95), vec3(0,100,-5), vec3(0,0,-5), new metal(vec3(0.7, 0.6, 0.5), 0.0));
+
+    // 
+    texture *checker = new checker_texture(new constant_texture(vec3(0.2,0.3, 0.1)), new constant_texture(vec3(0.9, 0.9, 0.9)));
+    list[3] = new cube(vec3(-0.5,0.75,-1.5), 1.5, new lambertian(checker));
+    // list[3] = new cube(vec3(-0.5,0.75,-1.5), 1.3, new metal(vec3(0.8, 0.8, 0.9), 0.0));
+    list[4] = new sphere(vec3(-1.5,1,1.5), 1, new metal(vec3(0.8, 0.6, 0.2), 0.0));
+
+    unsigned char *tex_data2 = stbi_load("../jupiter_map.jpg", &nx, &ny, &nn, 0);
+    material *mat2 =  new lambertian(new image_texture(tex_data2, nx, ny));
+    list[5] = new sphere(vec3(2,1,0), 1.0, mat2);
+    list[6] = new sphere(vec3(-0.5,2.5,-1.5), 1.0, new dielectric(1.5));
+
+    material *light = new diffuse_light( new constant_texture(vec3(7, 7, 7)) );
+    list[7] = new cube(vec3(0.4,6,1.0), 2.5, light);
+
+    return new hitable_list(list,n);
+}
+
+
 hitable *final() {
     hitable **list = new hitable*[500];
     int l = 0;
@@ -305,11 +336,12 @@ int main() {
     // hitable *world = scene1();
     // hitable *world = scene2();
     // hitable *world = scene3();
+    hitable *world = scene4();
     // hitable *world = two_spheres();
     // hitable *world = perlin_spheres();
     // hitable *world = image_scene();
     // hitable *world = simple_light();
-    hitable *world = final();
+    // hitable *world = final();
     
     camera *cam = new camera(LOOK_FROM, LOOK_AT, vec3(0,1,0), FOV, float(WIDTH)/float(HEIGHT), APERTURE, DIST_TO_FOCUS);
     
