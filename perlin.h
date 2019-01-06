@@ -1,5 +1,5 @@
 //
-//  material.h
+//  perlin.h
 //  RayTracing
 //
 //  Created by moranzcw on 2018/12/30.

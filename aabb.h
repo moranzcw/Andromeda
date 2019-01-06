@@ -1,5 +1,5 @@
 //
-//  hitable.h
+//  aabb.h
 //  RayTracing
 //
 //  Created by moranzcw on 2018/12/28.

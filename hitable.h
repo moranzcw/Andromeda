@@ -31,6 +31,9 @@ public:
     virtual bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const = 0;
     // 纯虚函数，返回该对象的包围盒
     virtual bool bounding_box(aabb& box) const = 0;
+
+    // 虚析构函数
+    virtual ~hitable() {}
 };
 
 #endif /* hitable_h */

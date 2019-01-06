@@ -1,5 +1,5 @@
 //
-//  material.h
+//  texture.h
 //  RayTracing
 //
 //  Created by moranzcw on 2018/12/30.

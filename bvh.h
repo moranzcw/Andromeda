@@ -1,5 +1,5 @@
 //
-//  hitable.h
+//  bvh.h
 //  RayTracing
 //
 //  Created by moranzcw on 2018/12/28.
@@ -9,12 +9,14 @@
 #ifndef bvh_h
 #define bvh_h
 
+#include <vector>
+#include <algorithm>
 #include "hitable.h"
 
 class bvh_node : public hitable  {
 public:
     bvh_node() {}
-    bvh_node(hitable **l, int n);
+    bvh_node(std::vector<hitable*> l);
     virtual bool hit(const ray& r, float tmin, float tmax, hit_record& rec) const;
     virtual bool bounding_box(aabb& box) const;
     
@@ -27,31 +29,31 @@ public:
 };
 
 // 比较两个包围盒的坐标
-int box_x_compare(const void * a, const void * b);
-int box_y_compare(const void * a, const void * b);
-int box_z_compare(const void * a, const void * b);
+bool box_x_compare(const hitable *a, const hitable *b);
+bool box_y_compare(const hitable *a, const hitable *b);
+bool box_z_compare(const hitable *a, const hitable *b);
 
-bvh_node::bvh_node(hitable **l, int n) {
+bvh_node::bvh_node(std::vector<hitable*> l) {
     // 从x,y,z随机选择一个坐标轴排序
     int axis = int(3*drand48());
     if (axis == 0)
-       qsort(l, n, sizeof(hitable *), box_x_compare);
+        std::sort(l.begin(),l.end(),box_x_compare);
     else if (axis == 1)
-       qsort(l, n, sizeof(hitable *), box_y_compare);
+        std::sort(l.begin(),l.end(),box_y_compare);
     else
-       qsort(l, n, sizeof(hitable *), box_z_compare);
+        std::sort(l.begin(),l.end(),box_z_compare);
     
     // 生成二叉树
-    if (n == 1) { // 只有一个对象
+    if (l.size() == 1) { // 只有一个对象
         left = right = l[0];
     }
-    else if (n == 2) { // 有两个对象
+    else if (l.size() == 2) { // 有两个对象
         left = l[0];
         right = l[1];
     }
     else { // 大于两个对象，递归生成子树
-        left = new bvh_node(l, n/2);
-        right = new bvh_node(l + n/2, n - n/2);
+        left = new bvh_node(std::vector<hitable *>(l.begin(), l.begin()+l.size()/2));
+        right = new bvh_node(std::vector<hitable *>(l.begin()+l.size()/2, l.end()));
     }
 
     // 求包围盒
@@ -92,40 +94,25 @@ bool bvh_node::bounding_box(aabb& b) const {
     return true;
 }
 
-int box_x_compare(const void * a, const void * b) {
+bool box_x_compare(const hitable *a, const hitable *b) {
     aabb box_left, box_right;
-    hitable *ah = *(hitable**)a;
-    hitable *bh = *(hitable**)b;
-    if(!ah->bounding_box(box_left) || !bh->bounding_box(box_right))
+    if(!a->bounding_box(box_left) || !b->bounding_box(box_right))
                     std::cerr << "no bounding box in bvh_node constructor\n";
-    if ( box_left.min().x() - box_right.min().x() < 0.0  )
-        return -1;
-    else
-        return 1;
+    return box_left.min().x() - box_right.min().x() < 0.0;
 }
 
-int box_y_compare(const void * a, const void * b) {
+bool box_y_compare(const hitable *a, const hitable *b) {
     aabb box_left, box_right;
-    hitable *ah = *(hitable**)a;
-    hitable *bh = *(hitable**)b;
-    if(!ah->bounding_box(box_left) || !bh->bounding_box(box_right))
+    if(!a->bounding_box(box_left) || !b->bounding_box(box_right))
                     std::cerr << "no bounding box in bvh_node constructor\n";
-    if ( box_left.min().y() - box_right.min().y() < 0.0  )
-        return -1;
-    else
-        return 1;
+    return box_left.min().y() - box_right.min().y() < 0.0;
 }
 
-int box_z_compare(const void * a, const void * b) {
+bool box_z_compare(const hitable *a, const hitable *b) {
     aabb box_left, box_right;
-    hitable *ah = *(hitable**)a;
-    hitable *bh = *(hitable**)b;
-    if(!ah->bounding_box(box_left) || !bh->bounding_box(box_right))
+    if(!a->bounding_box(box_left) || !b->bounding_box(box_right))
                     std::cerr << "no bounding box in bvh_node constructor\n";
-    if ( box_left.min().z() - box_right.min().z() < 0.0  )
-        return -1;
-    else
-        return 1;
+    return box_left.min().z() - box_right.min().z() < 0.0;
 }
 
 #endif /* bvh_h */
