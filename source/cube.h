@@ -57,7 +57,7 @@ bool cube::hit(const ray& r, float t_min, float t_max, hit_record& rec) const {
     bool hit_anything = false;
     double closest_so_far = t_max;
     
-    // 批量调用每个triangle对象的hit函数，仅保留距离视点最近的一组hit信息
+    // 批量调用每个square对象的hit函数，仅保留距离视点最近的一组hit信息
     for (int i = 0; i < 6; i++) {
         if (squares[i].hit(r, t_min, closest_so_far, temp_rec)) {
             hit_anything = true;

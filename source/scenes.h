@@ -26,7 +26,6 @@ scene scene1() {
     // 地面
     texture *checker = new checker_texture(new constant_texture(vec3(0.2,0.3, 0.1)), new constant_texture(vec3(0.9, 0.9, 0.9)));
     l.push_back(new square(vec3(100,0,100), vec3(-100,0,100), vec3(-100,0,-100), vec3(100,0,-100), new lambertian(checker)));
-    int i = 1;
 
     // 在-11<x<11，-11<z<11的区域内生成n个小球
     for (int a = -11; a < 11; a++) {
@@ -57,24 +56,26 @@ scene scene1() {
     l.push_back(new sphere(vec3(-3, 1, 0), 1.0, new lambertian(new constant_texture(vec3(0.4, 0.2, 0.1)))));
     l.push_back(new sphere(vec3(3, 1, 0), 1.0, new dielectric(1.5)));
     
-    camera cam(vec3(0,1,15), vec3(0,1,0), vec3(0,1,0), 30, 16.0/9.0, 0.2, 15);
-    skybox *skb = new blue_skybox();
+    camera cam(vec3(0,1,15), vec3(0,1,0), vec3(0,1,0), 30, 16.0/9.0, 0.0, 15);
+
+    int nx, ny, nn; 
+    unsigned char *tex_data = stbi_load(SKYBOX_TEXTURE_DAYLIGHT, &nx, &ny, &nn, 0);
+    skybox *skb = new daylight_skybox(new image_texture(tex_data, nx, ny));
     return scene(l, cam, skb);
 }
 
 // 生成场景
 scene scene2() {
-    // 四个球
+    // 2个球
     std::vector<hitable*> l;
-    l.push_back(new square(vec3(100,0,100), vec3(-100,0,100), vec3(-100,0,-100), vec3(100,0,-100), 
-                new lambertian(new constant_texture(vec3(0.7, 0.4, 0.4)))));
-    l.push_back(new sphere(vec3(0, 1, 0), 1.0, new lambertian(new constant_texture(vec3(0.1, 0.2, 0.5)))));
-    l.push_back(new sphere(vec3(2, 1, 0), 1.0, new metal(vec3(0.8, 0.6, 0.2), 0.0)));
-    l.push_back(new sphere(vec3(-2, 1, 0), 1.0, new dielectric(1.5)));
-    l.push_back(new sphere(vec3(-2, 1, 0), 0.8, new dielectric(1.5)));
+    l.push_back(new sphere(vec3(0, 1, 0), 1.0, new dielectric(1.5)));
+    l.push_back(new sphere(vec3(0, 1, 0), 0.8, new dielectric(1.5)));
 
-    camera cam(vec3(0,1,15), vec3(0,1,0), vec3(0,1,0), 30, 16.0/9.0, 0.2, 15); 
-    skybox *skb = new blue_skybox();
+    camera cam(vec3(0,1,4), vec3(0,1,0), vec3(0,1,0), 80, 16.0/9.0, 0.01, 4);
+
+    int nx, ny, nn; 
+    unsigned char *tex_data = stbi_load(SKYBOX_TEXTURE_DAYLIGHT_2, &nx, &ny, &nn, 0);
+    skybox *skb = new daylight_skybox(new image_texture(tex_data, nx, ny));
     return scene(l, cam, skb);
 }
 
@@ -183,7 +184,7 @@ scene dark2() {
     l.push_back(new square(vec3(-150,550,412), vec3(150,550,412), vec3(150,550,147), vec3(-150,550,147), light));
 
     int nx, ny, nn; 
-    unsigned char *ground_tex = stbi_load("../marble.jpg", &nx, &ny, &nn, 0);
+    unsigned char *ground_tex = stbi_load(TEXTURE_MARBLE_MAP, &nx, &ny, &nn, 0);
     material *ground =  new lambertian(new image_texture(ground_tex, nx, ny));
     int nb = 20;
     for (int i = 0; i < nb; i++) {

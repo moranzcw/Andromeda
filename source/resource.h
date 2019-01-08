@@ -13,5 +13,7 @@
 #define TEXTURE_JUPITER_MAP "../resource/texture/jupiter_map.jpg"
 #define TEXTURE_MARS_MAP "../resource/texture/mars_map.jpg"
 #define TEXTURE_MARBLE_MAP "../resource/texture/marble.jpg"
+#define SKYBOX_TEXTURE_DAYLIGHT "../resource/skybox_texture/daylight_skybox.jpg"
+#define SKYBOX_TEXTURE_DAYLIGHT_2 "../resource/skybox_texture/daylight_skybox2.jpg"
 
 #endif /* resource_h */
