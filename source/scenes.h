@@ -16,6 +16,7 @@
 #include "bvh.h"
 #include "scene.h"
 #include "skybox.h"
+#include "resource.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -108,15 +109,15 @@ scene image_tex() {
     l.push_back(new square(vec3(100,0,100), vec3(-100,0,100), vec3(-100,0,-100), vec3(100,0,-100),new lambertian( checker )));
     
     int nx, ny, nn;
-    unsigned char *tex_data = stbi_load("../mars_map.jpg", &nx, &ny, &nn, 0);
+    unsigned char *tex_data = stbi_load(TEXTURE_MARS_MAP, &nx, &ny, &nn, 0);
     material *mat =  new lambertian(new image_texture(tex_data, nx, ny));
     l.push_back(new sphere(vec3(-2.5, 1, 0), 1, mat));
 
-    unsigned char *tex_data2 = stbi_load("../jupiter_map.jpg", &nx, &ny, &nn, 0);
+    unsigned char *tex_data2 = stbi_load(TEXTURE_JUPITER_MAP, &nx, &ny, &nn, 0);
     material *mat2 =  new lambertian(new image_texture(tex_data2, nx, ny));
     l.push_back(new sphere(vec3(0, 1, 0), 1, mat2));
 
-    unsigned char *tex_data3 = stbi_load("../marble.jpg", &nx, &ny, &nn, 0);
+    unsigned char *tex_data3 = stbi_load(TEXTURE_MARBLE_MAP, &nx, &ny, &nn, 0);
     material *mat3 =  new lambertian(new image_texture(tex_data3, nx, ny));
     l.push_back(new cube(vec3(2.5, 1, 0), 1.5, mat3));
 
@@ -148,7 +149,7 @@ scene dark1() {
     std::vector<hitable*> l;
 
     int nx, ny, nn; 
-    unsigned char *ground_tex = stbi_load("../marble.jpg", &nx, &ny, &nn, 0);
+    unsigned char *ground_tex = stbi_load(TEXTURE_MARBLE_MAP, &nx, &ny, &nn, 0);
     material *ground =  new lambertian(new image_texture(ground_tex, nx, ny));
     l.push_back(new square(vec3(10,0,10), vec3(-10,0,10), vec3(-10,0,-10), vec3(10,0,-10), ground));
     l.push_back(new square(vec3(100,0,95), vec3(0,0,-5), vec3(0,100,-5), vec3(100,100,95), 
@@ -161,7 +162,7 @@ scene dark1() {
     l.push_back(new cube(vec3(-0.5,0.75,-1.5), 1.5, new lambertian(checker)));
      l.push_back(new sphere(vec3(-1.5,1,1.5), 1, new metal(vec3(0.8, 0.6, 0.2), 0.0)));
 
-    unsigned char *tex_data2 = stbi_load("../jupiter_map.jpg", &nx, &ny, &nn, 0);
+    unsigned char *tex_data2 = stbi_load(TEXTURE_JUPITER_MAP, &nx, &ny, &nn, 0);
     material *mat2 =  new lambertian(new image_texture(tex_data2, nx, ny));
     l.push_back(new sphere(vec3(2,1,0), 1.0, mat2));
     l.push_back(new sphere(vec3(-0.5,2.5,-1.5), 1.0, new dielectric(1.5)));
@@ -192,11 +193,11 @@ scene dark2() {
         }
     }
 
-    unsigned char *tex_data = stbi_load("../mars_map.jpg", &nx, &ny, &nn, 0);
+    unsigned char *tex_data = stbi_load(TEXTURE_MARS_MAP, &nx, &ny, &nn, 0);
     material *mat =  new lambertian(new image_texture(tex_data, nx, ny));
     l.push_back(new sphere(vec3(-50, 400, 70), 70, mat));
 
-    unsigned char *tex_data2 = stbi_load("../jupiter_map.jpg", &nx, &ny, &nn, 0);
+    unsigned char *tex_data2 = stbi_load(TEXTURE_JUPITER_MAP, &nx, &ny, &nn, 0);
     material *mat2 =  new lambertian(new image_texture(tex_data2, nx, ny));
     l.push_back(new sphere(vec3(210, 270, 230), 80, mat2));
 

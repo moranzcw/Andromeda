@@ -6,7 +6,6 @@
 //  Copyright © 2018 moranzcw. All rights reserved.
 //
 
-
 #ifndef texture_h
 #define texture_h
 
