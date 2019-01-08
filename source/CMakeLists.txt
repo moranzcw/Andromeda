@@ -11,5 +11,5 @@ else( CMAKE_BUILD_TYPE STREQUAL "Debug" )
 endif( CMAKE_BUILD_TYPE STREQUAL "Debug" )
 message("Build Type:" ${CMAKE_BUILD_TYPE} ${CMAKE_CXX_FLAGS})
 
-set(SOURCE_FILES main.cpp scenes.h scene.h vec3.h ray.h aabb.h hitable.h bvh.h sphere.h hitable_list.h camera.h material.h texture.h perlin.h stb_image.h)
+set(SOURCE_FILES main.cpp scenes.h scene.h skybox.h vec3.h ray.h aabb.h hitable.h bvh.h sphere.h camera.h material.h texture.h perlin.h stb_image.h)
 add_executable(RayTracing ${SOURCE_FILES})

@@ -22,6 +22,42 @@
 #define DEPTH 50 // 迭代深度
 #define THREAD_NUM 4 // 线程数
 
+// 着色，返回该光线的色彩，参数：光线，环境物品列表，迭代次数
+vec3 color(const ray& r, const scene &s, int depth) {
+    hit_record rec;
+    // 相交检测，rec带回相交信息
+    if (s.bvh_tree.hit(r, 0.001, FLT_MAX, rec)) {
+        ray scattered; // 散射光线
+        vec3 attenuation; // 衰减
+        vec3 emitted = rec.mat_ptr->emitted(rec.u, rec.v, rec.p); //自发光
+        // 若迭代次数没有达到上限，且相交的物体可以散射，则计算散射光线和衰减，并递归计算颜色
+        if (depth < DEPTH && rec.mat_ptr->scatter(r, rec, attenuation, scattered)) {
+            return emitted + attenuation*color(scattered, s, depth+1);
+        }
+        //若迭代次数已达上限，说明光线散射多次依然没有到达背景，返回黑色
+        return emitted + vec3(0,0,0);
+    }
+    // 天空盒子
+    return s.skb->get_background(r);
+}
+
+// 为像素着色，实现了抗锯齿
+vec3 pixel_render(int x_pos, int y_pos, const scene &scene){
+    vec3 col(0,0,0);
+    for (int s=0; s < SAMPLE; s++) {
+        // u,v坐标添加像素范围内的随机偏移，用于抗锯齿
+        float u = float(x_pos + drand48()) / float(WIDTH);
+        float v = float(y_pos + drand48()) / float(HEIGHT);
+        ray r = scene.cam.get_ray(u, v);
+//      vec3 p = r.point_at_parameter(2.0);
+        // 累加所有采样的结果
+        col += color(r, scene, 0);
+    }
+    col /= float(SAMPLE); // 对结果求平均
+    col = vec3( sqrt(col[0]), sqrt(col[1]), sqrt(col[2]) );
+    return col;
+}
+
 class pixel{
 public:
     pixel() {};
@@ -41,50 +77,6 @@ public:
     int y_pos;
 };
 
-// 着色，返回该光线的色彩，参数：光线，环境物品列表，迭代次数
-vec3 color(const ray& r, const hitable &world, int depth) {
-    hit_record rec;
-    // 相交检测，rec带回相交信息
-    if (world.hit(r, 0.001, FLT_MAX, rec)) {
-        ray scattered; // 散射光线
-        vec3 attenuation; // 衰减
-        vec3 emitted = rec.mat_ptr->emitted(rec.u, rec.v, rec.p); //自发光
-        // 若迭代次数没有达到上限，则计算散射光线和衰减，并递归计算颜色
-        if (depth < DEPTH && rec.mat_ptr->scatter(r, rec, attenuation, scattered)) {
-            return emitted + attenuation*color(scattered, world, depth+1);
-        }
-        else {
-            //若迭代次数已达上限，说明光线散射多次依然没有到达背景，返回黑色
-            return emitted + vec3(0,0,0);
-        }
-    }
-    else {
-        // 若没有相交，则按y坐标计算背景颜色
-        vec3 unit_direction = unit_vector(r.direction());
-        float t = 0.5*(unit_direction.y() + 1.0);
-        return (1.0-t)*vec3(1.0, 1.0, 1.0) + t*vec3(0.5, 0.7, 1.0);
-        // return vec3(0,0,0);
-    }
-}
-
-// 为像素着色，实现了抗锯齿
-vec3 pixel_render(int x_pos, int y_pos, const scene *world){
-    vec3 col(0,0,0);
-    for (int s=0; s < SAMPLE; s++) {
-        // u,v坐标添加像素范围内的随机偏移，用于抗锯齿
-        float u = float(x_pos + drand48()) / float(WIDTH);
-        float v = float(y_pos + drand48()) / float(HEIGHT);
-        ray r = world->cam.get_ray(u, v);
-//      vec3 p = r.point_at_parameter(2.0);
-        // 累加所有采样的结果
-        col += color(r, world->bvh_tree,0);
-    }
-    col /= float(SAMPLE); // 对结果求平均
-    col = vec3( sqrt(col[0]), sqrt(col[1]), sqrt(col[2]) );
-    return col;
-}
-
-
 std::mutex q1_mutex;
 std::mutex q2_mutex;
 std::queue<request> q1;
@@ -103,7 +95,7 @@ void run(){
             break;
 
         // 渲染
-        vec3 col = pixel_render(r.x_pos, r.y_pos, r.scene);
+        vec3 col = pixel_render(r.x_pos, r.y_pos, *r.scene);
         pixel p(col, r.x_pos, r.y_pos);
 
         // 渲染结果写入q2
@@ -125,8 +117,8 @@ int main() {
     // scene s = perlin_spheres();
     // scene s = image_tex();
     // scene s = simple_light();
-    // scene s = dark1();
-    scene s = dark2();
+    scene s = dark1();
+    // scene s = dark2();
     
     // camera *cam = new camera(LOOK_FROM, LOOK_AT, vec3(0,1,0), FOV, float(WIDTH)/float(HEIGHT), APERTURE, DIST_TO_FOCUS);
     

@@ -15,6 +15,7 @@
 #include "material.h"
 #include "bvh.h"
 #include "scene.h"
+#include "skybox.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -55,8 +56,9 @@ scene scene1() {
     l.push_back(new sphere(vec3(-3, 1, 0), 1.0, new lambertian(new constant_texture(vec3(0.4, 0.2, 0.1)))));
     l.push_back(new sphere(vec3(3, 1, 0), 1.0, new dielectric(1.5)));
     
-    camera cam(vec3(0,1,15), vec3(0,1,0), vec3(0,1,0), 30, 16.0/9.0, 0.2, 15); 
-    return scene(l,cam);
+    camera cam(vec3(0,1,15), vec3(0,1,0), vec3(0,1,0), 30, 16.0/9.0, 0.2, 15);
+    skybox *skb = new blue_skybox();
+    return scene(l, cam, skb);
 }
 
 // 生成场景
@@ -71,7 +73,8 @@ scene scene2() {
     l.push_back(new sphere(vec3(-2, 1, 0), 0.8, new dielectric(1.5)));
 
     camera cam(vec3(0,1,15), vec3(0,1,0), vec3(0,1,0), 30, 16.0/9.0, 0.2, 15); 
-    return scene(l,cam);
+    skybox *skb = new blue_skybox();
+    return scene(l, cam, skb);
 }
 
 scene two_spheres() {
@@ -82,7 +85,8 @@ scene two_spheres() {
     l.push_back(new sphere(vec3(0, 10, 0), 10, new lambertian(checker)));
 
     camera cam(vec3(0,1,15), vec3(0,1,0), vec3(0,1,0), 30, 16.0/9.0, 0.2, 15); 
-    return scene(l,cam);
+    skybox *skb = new blue_skybox();
+    return scene(l, cam, skb);
 }
 
 scene perlin_spheres() {
@@ -93,7 +97,8 @@ scene perlin_spheres() {
     l.push_back(new sphere(vec3(0, 2, 0), 2, new lambertian( pertext )));
     
     camera cam(vec3(0,1,15), vec3(0,1,0), vec3(0,1,0), 30, 16.0/9.0, 0.2, 15); 
-    return scene(l,cam);
+    skybox *skb = new blue_skybox();
+    return scene(l, cam, skb);
 }
 
 scene image_tex() {
@@ -116,7 +121,8 @@ scene image_tex() {
     l.push_back(new cube(vec3(2.5, 1, 0), 1.5, mat3));
 
     camera cam(vec3(0,1,15), vec3(0,1,0), vec3(0,1,0), 30, 16.0/9.0, 0.2, 15); 
-    return scene(l,cam);
+    skybox *skb = new blue_skybox();
+    return scene(l, cam, skb);
 }
 
 scene simple_light() {
@@ -132,7 +138,8 @@ scene simple_light() {
     l.push_back(new square(vec3(2,2,-1), vec3(2,2,1), vec3(2,0,1), vec3(2,0,-1), 
                 new diffuse_light(new constant_texture(vec3(4,4,4)))));
     camera cam(vec3(0,1,15), vec3(0,1,0), vec3(0,1,0), 30, 16.0/9.0, 0.2, 15); 
-    return scene(l,cam);
+    skybox *skb = new blue_skybox();
+    return scene(l, cam, skb);
 }
 
 
@@ -163,7 +170,8 @@ scene dark1() {
     l.push_back(new cube(vec3(0.4,6,1.0), 2.5, light));
 
     camera cam(vec3(4,6,15), vec3(0,1,0), vec3(0,1,0), 20, 16.0/9.0, 0.0, 15); 
-    return scene(l,cam);
+    skybox *skb = new black_skybox();
+    return scene(l, cam, skb);
 }
 
 
@@ -202,7 +210,8 @@ scene dark2() {
     l.push_back(new square(vec3(310,500,0), vec3(310,500,600), vec3(310,140,600), vec3(310,140,0), new metal(vec3(0.7, 0.6, 0.5), 0.0)));
 
     camera cam(vec3(-200, 280, 1200), vec3(170,320,0), vec3(0,1,0), 33, 16.0/9.0, 0.0, 15); 
-    return scene(l,cam);
+    skybox *skb = new black_skybox();
+    return scene(l, cam, skb);
 }
 
 #endif /* scenes_h */
