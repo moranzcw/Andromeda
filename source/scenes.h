@@ -65,8 +65,8 @@ scene scene1() {
 }
 
 // 生成场景
-scene scene2() {
-    // 2个球
+scene skybox_scene() {
+    // skybox
     std::vector<hitable*> l;
     l.push_back(new sphere(vec3(0, 1, 0), 1.0, new dielectric(1.5)));
     l.push_back(new sphere(vec3(0, 1, 0), 0.8, new dielectric(1.5)));

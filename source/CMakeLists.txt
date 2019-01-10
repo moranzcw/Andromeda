@@ -12,4 +12,4 @@ endif( CMAKE_BUILD_TYPE STREQUAL "Debug" )
 message("Build Type:" ${CMAKE_BUILD_TYPE} ${CMAKE_CXX_FLAGS})
 
 set(SOURCE_FILES main.cpp)
-add_executable(RayTracing ${SOURCE_FILES})
+add_executable(raytracing ${SOURCE_FILES})
