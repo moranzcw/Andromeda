@@ -68,6 +68,8 @@ bool cube::hit(const ray& r, float t_min, float t_max, hit_record& rec) const {
     return hit_anything;
 }
 
+#include <iostream>
+using namespace std;
 bool cube::bounding_box(aabb& box) const{
     aabb temp_box;
     bool flag = squares[0].bounding_box(temp_box);
@@ -78,7 +80,7 @@ bool cube::bounding_box(aabb& box) const{
     
     // 与所有对象求包围盒
     for (int i=1; i<6; i++) {
-        if(squares[0].bounding_box(temp_box)) {
+        if(squares[i].bounding_box(temp_box)) {
             box = surrounding_box(box, temp_box);
         }
         else

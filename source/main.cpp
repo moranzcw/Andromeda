@@ -71,7 +71,6 @@ class request{
 public:
     request() {};
     request(const scene *w, int x, int y) : scene(w), x_pos(x), y_pos(y) {};
-    // const camera *cam;
     const scene *scene;
     int x_pos;
     int y_pos;
@@ -112,12 +111,12 @@ int main() {
     std::cout<<"Thread:"<<THREAD_NUM<<std::endl;
 
     // scene s = scene1();
-    scene s = scene2();
+    // scene s = scene2();
     // scene s = two_spheres();
     // scene s = perlin_spheres();
     // scene s = image_tex();
     // scene s = simple_light();
-    // scene s = dark1();
+    scene s = dark1();
     // scene s = dark2();
     
     // camera *cam = new camera(LOOK_FROM, LOOK_AT, vec3(0,1,0), FOV, float(WIDTH)/float(HEIGHT), APERTURE, DIST_TO_FOCUS);

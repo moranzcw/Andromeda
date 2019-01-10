@@ -144,7 +144,6 @@ scene simple_light() {
     return scene(l, cam, skb);
 }
 
-
 // 生成场景
 scene dark1() {
     std::vector<hitable*> l;
@@ -161,7 +160,9 @@ scene dark1() {
     // 
     texture *checker = new checker_texture(new constant_texture(vec3(0.2,0.3, 0.1)), new constant_texture(vec3(0.9, 0.9, 0.9)));
     l.push_back(new cube(vec3(-0.5,0.75,-1.5), 1.5, new lambertian(checker)));
-     l.push_back(new sphere(vec3(-1.5,1,1.5), 1, new metal(vec3(0.8, 0.6, 0.2), 0.0)));
+
+
+    l.push_back(new sphere(vec3(-1.5,1,1.5), 1, new metal(vec3(0.8, 0.6, 0.2), 0.0)));
 
     unsigned char *tex_data2 = stbi_load(TEXTURE_JUPITER_MAP, &nx, &ny, &nn, 0);
     material *mat2 =  new lambertian(new image_texture(tex_data2, nx, ny));
