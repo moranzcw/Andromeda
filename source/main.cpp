@@ -16,9 +16,9 @@
 #include "camera.h"
 #include "scenes.h"
 
-#define WIDTH 1280 // 宽
-#define HEIGHT 720 // 高
-#define SAMPLE 100 // 采样率
+#define WIDTH 1280/4 // 宽
+#define HEIGHT 720/4 // 高
+#define SAMPLE 2000 // 采样率
 #define DEPTH 50 // 迭代深度
 #define THREAD_NUM 4 // 线程数
 
@@ -111,12 +111,12 @@ int main() {
     std::cout<<"Thread:"<<THREAD_NUM<<std::endl;
 
     // scene s = scene1();
-    scene s = skybox_scene();
+    // scene s = skybox_scene();
     // scene s = two_spheres();
     // scene s = perlin_spheres();
     // scene s = image_tex();
     // scene s = simple_light();
-    // scene s = dark1();
+    scene s = dark1();
     // scene s = dark2();
     
     // camera *cam = new camera(LOOK_FROM, LOOK_AT, vec3(0,1,0), FOV, float(WIDTH)/float(HEIGHT), APERTURE, DIST_TO_FOCUS);

@@ -71,7 +71,7 @@ scene skybox_scene() {
     l.push_back(new sphere(vec3(0, 1, 0), 1.0, new dielectric(1.5)));
     l.push_back(new sphere(vec3(0, 1, 0), 0.8, new dielectric(1.5)));
 
-    camera cam(vec3(0,1,4), vec3(0,1,0), vec3(0,1,0), 80, 16.0/9.0, 0.01, 4);
+    camera cam(vec3(0,1,2.5), vec3(0,1,0), vec3(0,1,0), 110, 16.0/9.0, 0.01, 2.5);
 
     int nx, ny, nn; 
     unsigned char *tex_data = stbi_load(SKYBOX_TEXTURE_DAYLIGHT_2, &nx, &ny, &nn, 0);

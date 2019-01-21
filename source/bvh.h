@@ -17,6 +17,10 @@ class bvh_node : public hitable  {
 public:
     bvh_node() {}
     bvh_node(std::vector<hitable*> l);
+    ~bvh_node() {
+        delete left;
+        delete right;
+    }
     virtual bool hit(const ray& r, float tmin, float tmax, hit_record& rec) const;
     virtual bool bounding_box(aabb& box) const;
     
