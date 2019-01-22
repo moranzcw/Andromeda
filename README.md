@@ -1,4 +1,4 @@
-# miniRayTracing
+# Andromeda
 
 ## 简介
 
