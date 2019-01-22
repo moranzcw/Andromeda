@@ -6,12 +6,12 @@
 //  Copyright © 2018 moranzcw. All rights reserved.
 //
 
-#ifndef square_h
-#define square_h
+#ifndef SQUARE_H
+#define SQUARE_H
 
 #include "triangle.h"
 
-class square : public hitable {
+class square : public Object {
 public:
     // 构造函数
     square() {}
@@ -25,8 +25,8 @@ public:
         triangles[1] = triangle(v1,v3,v4,mat_ptr);
     };
     // 相交检测
-    virtual bool hit(const ray& r, float tmin, float tmax, hit_record& rec) const;
-    virtual bool bounding_box(aabb& box) const;
+    virtual bool Hit(const ray& r, float tmin, float tmax, HitRecord& rec) const;
+    virtual bool BoundingBox(AABB& box) const;
 
     // 数据
     vec3 vertex[4];
@@ -34,14 +34,14 @@ public:
     material *mat_ptr; // 材质
 };
 
-bool square::hit(const ray& r, float t_min, float t_max, hit_record& rec) const {
-    hit_record temp_rec;
+bool square::Hit(const ray& r, float t_min, float t_max, HitRecord& rec) const {
+    HitRecord temp_rec;
     bool hit_anything = false;
     double closest_so_far = t_max;
     
     // 批量调用每个triangle对象的hit函数，仅保留距离视点最近的一组hit信息
     for (int i = 0; i < 2; i++) {
-        if (triangles[i].hit(r, t_min, closest_so_far, temp_rec)) {
+        if (triangles[i].Hit(r, t_min, closest_so_far, temp_rec)) {
             hit_anything = true;
             closest_so_far = temp_rec.t;
             rec = temp_rec;
@@ -57,12 +57,12 @@ bool square::hit(const ray& r, float t_min, float t_max, hit_record& rec) const 
     return hit_anything;
 }
 
-bool square::bounding_box(aabb& box) const{
-    aabb temp1, temp2;
-    triangles[0].bounding_box(temp1);
-    triangles[1].bounding_box(temp2);
-    box = surrounding_box(temp1, temp2);
+bool square::BoundingBox(AABB& box) const{
+    AABB temp1, temp2;
+    triangles[0].BoundingBox(temp1);
+    triangles[1].BoundingBox(temp2);
+    box = AABB::SurroundingBox(temp1, temp2);
     return true;
 }
 
-#endif /* square_h */
+#endif /* SQUARE_H */

@@ -6,22 +6,22 @@
 //  Copyright © 2018 moranzcw. All rights reserved.
 //
 
-#ifndef sphere_h
-#define sphere_h
+#ifndef SPHERE_H
+#define SPHERE_H
 
-#include "hitable.h"
+#include "object.h"
 
-// 球，继承自hitable，实现光线相交的方法
-class sphere: public hitable {
+// 球，继承自Object，实现光线相交的方法
+class sphere: public Object {
 public:
     // 构造函数
     sphere() {}
     // 构造函数，参数为球心，半径，材质
     sphere(vec3 cen, float r, material *m) : center(cen), radius(r), mat_ptr(m)  {};
     // 相交检测
-    virtual bool hit(const ray& r, float tmin, float tmax, hit_record& rec) const;
+    virtual bool Hit(const ray& r, float tmin, float tmax, HitRecord& rec) const;
     // 包围盒
-    virtual bool bounding_box(aabb& box) const;
+    virtual bool BoundingBox(AABB& box) const;
     
     // 数据
     vec3 center; // 球心
@@ -29,8 +29,8 @@ public:
     material *mat_ptr; // 材质
 };
 
-bool sphere::bounding_box(aabb& box) const {
-    box = aabb(center - vec3(radius, radius, radius), center + vec3(radius, radius, radius));
+bool sphere::BoundingBox(AABB& box) const {
+    box = AABB(center - vec3(radius, radius, radius), center + vec3(radius, radius, radius));
     return true;
 }
 
@@ -42,7 +42,7 @@ void get_sphere_uv(const vec3& p, float& u, float& v) {
     v = (theta + M_PI/2) / M_PI;
 }
 
-bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec) const {
+bool sphere::Hit(const ray& r, float t_min, float t_max, HitRecord& rec) const {
     // 设ray端点到球心的距离等于半径，即可解出交点
     // 即dot((A + t*B - C),(A + t*B - C)) = R*R
     // 展开得，dot(B,B)*t^2 + 2*dot(A-C,A-C)*t + dot(C,C) - R*R = 0
@@ -78,4 +78,4 @@ bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec) const 
     return false;
 }
 
-#endif /* sphere_h */
+#endif /* SPHERE_H */

@@ -6,18 +6,18 @@
 //  Copyright © 2018 moranzcw. All rights reserved.
 //
 
-#ifndef aabb_h
-#define aabb_h
+#ifndef AABB_H
+#define AABB_H
 
 #include "ray.h"
 
 inline float ffmin(float a, float b) { return a < b ? a : b; }
 inline float ffmax(float a, float b) { return a > b ? a : b; }
 
-class aabb {
+class AABB {
 public:
-    aabb() {}
-    aabb(const vec3& a, const vec3& b) { _min = a; _max = b;}  
+    AABB() {}
+    AABB(const vec3& a, const vec3& b) { _min = a; _max = b;}  
 
     vec3 min() const {return _min; }
     vec3 max() const {return _max; }
@@ -33,18 +33,18 @@ public:
         }
         return true;
     }
+    
+    // 求包含两个盒子的盒子
+    static AABB SurroundingBox(AABB box0, AABB box1) {
+        vec3 small(fmin(box0.min().x(), box1.min().x()), fmin(box0.min().y(), box1.min().y()), fmin(box0.min().z(), box1.min().z()));
+        vec3 big(fmax(box0.max().x(), box1.max().x()), fmax(box0.max().y(), box1.max().y()), fmax(box0.max().z(), box1.max().z()));
+        return AABB(small,big);
+    }
 
+private:
     // 与坐标轴平行的盒子可以用两个点表示
     vec3 _min; // 小x,y,z
     vec3 _max; // 大x,y,z
 };
-
-// 求包含两个盒子的盒子
-aabb surrounding_box(aabb box0, aabb box1) {
-    vec3 small(fmin(box0.min().x(), box1.min().x()), fmin(box0.min().y(), box1.min().y()), fmin(box0.min().z(), box1.min().z()));
-    vec3 big(fmax(box0.max().x(), box1.max().x()), fmax(box0.max().y(), box1.max().y()), fmax(box0.max().z(), box1.max().z()));
-    return aabb(small,big);
-}
-
-#endif /* aabb_h */
+#endif /* AABB_H */
 

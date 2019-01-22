@@ -6,8 +6,8 @@
 //  Copyright © 2018 moranzcw. All rights reserved.
 //
 
-#ifndef scenes_h
-#define scenes_h
+#ifndef SCENES_H
+#define SCENES_H
 
 #include <vector>
 #include "sphere.h"
@@ -22,7 +22,7 @@
 
 // 生成场景
 scene scene1() {
-    std::vector<hitable*> l;
+    std::vector<Object*> l;
     // 地面
     texture *checker = new checker_texture(new constant_texture(vec3(0.2,0.3, 0.1)), new constant_texture(vec3(0.9, 0.9, 0.9)));
     l.push_back(new square(vec3(100,0,100), vec3(-100,0,100), vec3(-100,0,-100), vec3(100,0,-100), new lambertian(checker)));
@@ -56,7 +56,7 @@ scene scene1() {
     l.push_back(new sphere(vec3(-3, 1, 0), 1.0, new lambertian(new constant_texture(vec3(0.4, 0.2, 0.1)))));
     l.push_back(new sphere(vec3(3, 1, 0), 1.0, new dielectric(1.5)));
     
-    camera cam(vec3(0,1,15), vec3(0,1,0), vec3(0,1,0), 30, 16.0/9.0, 0.0, 15);
+    Camera cam(vec3(0,1,15), vec3(0,1,0), vec3(0,1,0), 30, 16.0/9.0, 0.0, 15);
 
     int nx, ny, nn; 
     unsigned char *tex_data = stbi_load(SKYBOX_TEXTURE_DAYLIGHT, &nx, &ny, &nn, 0);
@@ -67,11 +67,11 @@ scene scene1() {
 // 生成场景
 scene skybox_scene() {
     // skybox
-    std::vector<hitable*> l;
+    std::vector<Object*> l;
     l.push_back(new sphere(vec3(0, 1, 0), 1.0, new dielectric(1.5)));
     l.push_back(new sphere(vec3(0, 1, 0), 0.8, new dielectric(1.5)));
 
-    camera cam(vec3(0,1,2.5), vec3(0,1,0), vec3(0,1,0), 110, 16.0/9.0, 0.01, 2.5);
+    Camera cam(vec3(0,1,2.5), vec3(0,1,0), vec3(0,1,0), 110, 16.0/9.0, 0.01, 2.5);
 
     int nx, ny, nn; 
     unsigned char *tex_data = stbi_load(SKYBOX_TEXTURE_DAYLIGHT_2, &nx, &ny, &nn, 0);
@@ -80,31 +80,31 @@ scene skybox_scene() {
 }
 
 scene two_spheres() {
-    std::vector<hitable*> l;
+    std::vector<Object*> l;
 
     texture *checker = new checker_texture(new constant_texture(vec3(0.2,0.3, 0.1)), new constant_texture(vec3(0.9, 0.9, 0.9)));
     l.push_back(new sphere(vec3(0,-10, 0), 10, new lambertian(checker)));
     l.push_back(new sphere(vec3(0, 10, 0), 10, new lambertian(checker)));
 
-    camera cam(vec3(0,1,15), vec3(0,1,0), vec3(0,1,0), 30, 16.0/9.0, 0.2, 15); 
+    Camera cam(vec3(0,1,15), vec3(0,1,0), vec3(0,1,0), 30, 16.0/9.0, 0.2, 15); 
     skybox *skb = new blue_skybox();
     return scene(l, cam, skb);
 }
 
 scene perlin_spheres() {
-    std::vector<hitable*> l;
+    std::vector<Object*> l;
 
     texture *pertext = new noise_texture(4);
     l.push_back(new square(vec3(100,0,100), vec3(-100,0,100), vec3(-100,0,-100), vec3(100,0,-100),new lambertian( pertext )));
     l.push_back(new sphere(vec3(0, 2, 0), 2, new lambertian( pertext )));
     
-    camera cam(vec3(0,1,15), vec3(0,1,0), vec3(0,1,0), 30, 16.0/9.0, 0.2, 15); 
+    Camera cam(vec3(0,1,15), vec3(0,1,0), vec3(0,1,0), 30, 16.0/9.0, 0.2, 15); 
     skybox *skb = new blue_skybox();
     return scene(l, cam, skb);
 }
 
 scene image_tex() {
-    std::vector<hitable*> l;
+    std::vector<Object*> l;
 
     texture *checker = new checker_texture(new constant_texture(vec3(0.2,0.3, 0.1)), new constant_texture(vec3(0.9, 0.9, 0.9)));
     l.push_back(new square(vec3(100,0,100), vec3(-100,0,100), vec3(-100,0,-100), vec3(100,0,-100),new lambertian( checker )));
@@ -122,13 +122,13 @@ scene image_tex() {
     material *mat3 =  new lambertian(new image_texture(tex_data3, nx, ny));
     l.push_back(new cube(vec3(2.5, 1, 0), 1.5, mat3));
 
-    camera cam(vec3(0,1,15), vec3(0,1,0), vec3(0,1,0), 30, 16.0/9.0, 0.2, 15); 
+    Camera cam(vec3(0,1,15), vec3(0,1,0), vec3(0,1,0), 30, 16.0/9.0, 0.2, 15); 
     skybox *skb = new blue_skybox();
     return scene(l, cam, skb);
 }
 
 scene simple_light() {
-    std::vector<hitable*> l;
+    std::vector<Object*> l;
 
     texture *checker = new checker_texture(new constant_texture(vec3(0.2,0.3, 0.1)), new constant_texture(vec3(0.9, 0.9, 0.9)));
     l.push_back(new square(vec3(100,0,100), vec3(-100,0,100), vec3(-100,0,-100), vec3(100,0,-100),
@@ -139,14 +139,14 @@ scene simple_light() {
 
     l.push_back(new square(vec3(2,2,-1), vec3(2,2,1), vec3(2,0,1), vec3(2,0,-1), 
                 new diffuse_light(new constant_texture(vec3(4,4,4)))));
-    camera cam(vec3(0,1,15), vec3(0,1,0), vec3(0,1,0), 30, 16.0/9.0, 0.2, 15); 
+    Camera cam(vec3(0,1,15), vec3(0,1,0), vec3(0,1,0), 30, 16.0/9.0, 0.2, 15); 
     skybox *skb = new blue_skybox();
     return scene(l, cam, skb);
 }
 
 // 生成场景
 scene dark1() {
-    std::vector<hitable*> l;
+    std::vector<Object*> l;
 
     int nx, ny, nn; 
     unsigned char *ground_tex = stbi_load(TEXTURE_MARBLE_MAP, &nx, &ny, &nn, 0);
@@ -172,14 +172,14 @@ scene dark1() {
     material *light = new diffuse_light( new constant_texture(vec3(7, 7, 7)) );
     l.push_back(new cube(vec3(0.4,6,1.0), 2.5, light));
 
-    camera cam(vec3(4,6,15), vec3(0,1,0), vec3(0,1,0), 20, 16.0/9.0, 0.0, 15); 
+    Camera cam(vec3(4,6,15), vec3(0,1,0), vec3(0,1,0), 20, 16.0/9.0, 0.0, 15); 
     skybox *skb = new black_skybox();
     return scene(l, cam, skb);
 }
 
 
 scene dark2() {
-    std::vector<hitable*> l;
+    std::vector<Object*> l;
 
     material *light = new diffuse_light( new constant_texture(vec3(7, 7, 7)) );
     l.push_back(new square(vec3(-150,550,412), vec3(150,550,412), vec3(150,550,147), vec3(-150,550,147), light));
@@ -212,9 +212,9 @@ scene dark2() {
 
     l.push_back(new square(vec3(310,500,0), vec3(310,500,600), vec3(310,140,600), vec3(310,140,0), new metal(vec3(0.7, 0.6, 0.5), 0.0)));
 
-    camera cam(vec3(-200, 280, 1200), vec3(170,320,0), vec3(0,1,0), 33, 16.0/9.0, 0.0, 15); 
+    Camera cam(vec3(-200, 280, 1200), vec3(170,320,0), vec3(0,1,0), 33, 16.0/9.0, 0.0, 15); 
     skybox *skb = new black_skybox();
     return scene(l, cam, skb);
 }
 
-#endif /* scenes_h */
+#endif /* SCENES_H */

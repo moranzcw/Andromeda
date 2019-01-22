@@ -6,38 +6,38 @@
 //  Copyright © 2018 moranzcw. All rights reserved.
 //
 
-#ifndef bvh_h
-#define bvh_h
+#ifndef BVH_H
+#define BVH_H
 
 #include <vector>
 #include <algorithm>
-#include "hitable.h"
+#include "object.h"
 
-class bvh_node : public hitable  {
+class BVHNode : public Object  {
 public:
-    bvh_node() {}
-    bvh_node(std::vector<hitable*> l);
-    ~bvh_node() {
+    BVHNode() {}
+    BVHNode(std::vector<Object*> l);
+    ~BVHNode() {
         delete left;
         delete right;
     }
-    virtual bool hit(const ray& r, float tmin, float tmax, hit_record& rec) const;
-    virtual bool bounding_box(aabb& box) const;
+    virtual bool Hit(const ray& r, float tmin, float tmax, HitRecord& rec) const;
+    virtual bool BoundingBox(AABB& box) const;
     
     // 左子树
-    hitable *left;
+    Object *left;
     // 右子树
-    hitable *right;
+    Object *right;
     // 包围盒
-    aabb box;
+    AABB box;
 };
 
 // 比较两个包围盒的坐标
-bool box_x_compare(const hitable *a, const hitable *b);
-bool box_y_compare(const hitable *a, const hitable *b);
-bool box_z_compare(const hitable *a, const hitable *b);
+bool box_x_compare(const Object *a, const Object *b);
+bool box_y_compare(const Object *a, const Object *b);
+bool box_z_compare(const Object *a, const Object *b);
 
-bvh_node::bvh_node(std::vector<hitable*> l) {
+BVHNode::BVHNode(std::vector<Object*> l) {
     // 从x,y,z随机选择一个坐标轴排序
     int axis = int(3*drand48());
     if (axis == 0)
@@ -56,22 +56,22 @@ bvh_node::bvh_node(std::vector<hitable*> l) {
         right = l[1];
     }
     else { // 大于两个对象，递归生成子树
-        left = new bvh_node(std::vector<hitable *>(l.begin(), l.begin()+l.size()/2));
-        right = new bvh_node(std::vector<hitable *>(l.begin()+l.size()/2, l.end()));
+        left = new BVHNode(std::vector<Object *>(l.begin(), l.begin()+l.size()/2));
+        right = new BVHNode(std::vector<Object *>(l.begin()+l.size()/2, l.end()));
     }
 
     // 求包围盒
-    aabb box_left, box_right;
-    if(!left->bounding_box(box_left) || !right->bounding_box(box_right))
+    AABB box_left, box_right;
+    if(!left->BoundingBox(box_left) || !right->BoundingBox(box_right))
         std::cerr << "no bounding box in bvh_node constructor\n"; 
-    box = surrounding_box(box_left, box_right);
+    box = AABB::SurroundingBox(box_left, box_right);
 }
 
-bool bvh_node::hit(const ray& r, float t_min, float t_max, hit_record& rec) const {
+bool BVHNode::Hit(const ray& r, float t_min, float t_max, HitRecord& rec) const {
     if (box.hit(r, t_min, t_max)) {
-        hit_record left_rec, right_rec;
-        bool hit_left = left->hit(r, t_min, t_max, left_rec);
-        bool hit_right = right->hit(r, t_min, t_max, right_rec);
+        HitRecord left_rec, right_rec;
+        bool hit_left = left->Hit(r, t_min, t_max, left_rec);
+        bool hit_right = right->Hit(r, t_min, t_max, right_rec);
         if (hit_left && hit_right) {
             if (left_rec.t < right_rec.t) 
                 rec = left_rec;
@@ -93,31 +93,31 @@ bool bvh_node::hit(const ray& r, float t_min, float t_max, hit_record& rec) cons
     else return false;
 }
 
-bool bvh_node::bounding_box(aabb& b) const {
+bool BVHNode::BoundingBox(AABB& b) const {
     b = box;
     return true;
 }
 
-bool box_x_compare(const hitable *a, const hitable *b) {
-    aabb box_left, box_right;
-    if(!a->bounding_box(box_left) || !b->bounding_box(box_right))
-                    std::cerr << "no bounding box in bvh_node constructor\n";
+bool box_x_compare(const Object *a, const Object *b) {
+    AABB box_left, box_right;
+    if(!a->BoundingBox(box_left) || !b->BoundingBox(box_right))
+        std::cerr << "no bounding box in bvh_node constructor\n";
     return box_left.min().x() - box_right.min().x() < 0.0;
 }
 
-bool box_y_compare(const hitable *a, const hitable *b) {
-    aabb box_left, box_right;
-    if(!a->bounding_box(box_left) || !b->bounding_box(box_right))
-                    std::cerr << "no bounding box in bvh_node constructor\n";
+bool box_y_compare(const Object *a, const Object *b) {
+    AABB box_left, box_right;
+    if(!a->BoundingBox(box_left) || !b->BoundingBox(box_right))
+        std::cerr << "no bounding box in bvh_node constructor\n";
     return box_left.min().y() - box_right.min().y() < 0.0;
 }
 
-bool box_z_compare(const hitable *a, const hitable *b) {
-    aabb box_left, box_right;
-    if(!a->bounding_box(box_left) || !b->bounding_box(box_right))
-                    std::cerr << "no bounding box in bvh_node constructor\n";
+bool box_z_compare(const Object *a, const Object *b) {
+    AABB box_left, box_right;
+    if(!a->BoundingBox(box_left) || !b->BoundingBox(box_right))
+        std::cerr << "no bounding box in bvh_node constructor\n";
     return box_left.min().z() - box_right.min().z() < 0.0;
 }
 
-#endif /* bvh_h */
+#endif /* BVH_H */
 

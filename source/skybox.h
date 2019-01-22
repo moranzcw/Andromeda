@@ -6,8 +6,8 @@
 //  Copyright © 2018 moranzcw. All rights reserved.
 //
 
-#ifndef skybox_h
-#define skybox_h
+#ifndef SKYBOX_H
+#define SKYBOX_H
 
 #include "ray.h"
 #include "square.h"
@@ -36,7 +36,7 @@ public:
 };
 
 
-// 存放hitable对象的数组
+// 存放Object对象的数组
 class daylight_skybox : public skybox {
 public:
     daylight_skybox(texture *tex) : tex_ptr(tex) {
@@ -70,7 +70,7 @@ public:
     }
     
     virtual vec3 get_background(const ray &r) const {
-        hit_record rec, temp_rec;
+        HitRecord rec, temp_rec;
 
         ray rr = r;
         rr.A = vec3(0,0,0);
@@ -78,7 +78,7 @@ public:
         // 批量调用每个square对象的hit函数，仅保留距离视点最近的一组hit信息
         int i;
         for (i = 0; i < 6; i++) {
-            if (squares[i].hit(rr, 0.001, closest_so_far, temp_rec)) {
+            if (squares[i].Hit(rr, 0.001, closest_so_far, temp_rec)) {
                 closest_so_far = temp_rec.t;
                 rec = temp_rec;
                 break;
@@ -121,4 +121,4 @@ public:
     texture *tex_ptr; // 材质
 };
 
-#endif /* skybox_h */
+#endif /* SKYBOX_H */

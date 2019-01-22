@@ -6,8 +6,8 @@
 //  Copyright © 2018 moranzcw. All rights reserved.
 //
 
-#ifndef perlin_h
-#define perlin_h
+#ifndef PERLIN_H
+#define PERLIN_H
 
 #include "vec3.h"
 
@@ -92,5 +92,5 @@ int *perlin::perm_y = perlin_generate_perm();
 int *perlin::perm_z = perlin_generate_perm();
 
 
-#endif /* perlin_h */
+#endif /* PERLIN_H */
 

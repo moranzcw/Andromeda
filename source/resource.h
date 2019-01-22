@@ -6,8 +6,8 @@
 //  Copyright © 2018 moranzcw. All rights reserved.
 //
 
-#ifndef resource_h
-#define resource_h
+#ifndef RESOURCE_H
+#define RESOURCE_H
 
 #define TEXTURE_EARTH_MAP "../resource/texture/earth_map.jpg"
 #define TEXTURE_JUPITER_MAP "../resource/texture/jupiter_map.jpg"
@@ -16,4 +16,4 @@
 #define SKYBOX_TEXTURE_DAYLIGHT "../resource/skybox_texture/daylight_skybox.jpg"
 #define SKYBOX_TEXTURE_DAYLIGHT_2 "../resource/skybox_texture/daylight_skybox2.jpg"
 
-#endif /* resource_h */
+#endif /* RESOURCE_H */

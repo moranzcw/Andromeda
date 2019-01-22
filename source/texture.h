@@ -6,8 +6,8 @@
 //  Copyright © 2018 moranzcw. All rights reserved.
 //
 
-#ifndef texture_h
-#define texture_h
+#ifndef TEXTURE_H
+#define TEXTURE_H
 
 #include "perlin.h"
 #include "vec3.h"
@@ -87,4 +87,4 @@ vec3 image_texture::value(float u, float v, const vec3& p) const {
     return vec3(r, g, b);
 }
 
-#endif /* texture_h */
+#endif /* TEXTURE_H */

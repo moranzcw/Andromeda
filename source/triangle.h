@@ -6,12 +6,12 @@
 //  Copyright © 2018 moranzcw. All rights reserved.
 //
 
-#ifndef triangle_h
-#define triangle_h
+#ifndef TRIANGLE_H
+#define TRIANGLE_H
 
-#include "hitable.h"
+#include "object.h"
 
-class triangle : public hitable {
+class triangle : public Object {
 public:
     // 构造函数
     triangle() {}
@@ -22,8 +22,8 @@ public:
         vertex[2] = v3;
     };
     // 相交检测
-    virtual bool hit(const ray& r, float tmin, float tmax, hit_record& rec) const;
-    virtual bool bounding_box(aabb& box) const;
+    virtual bool Hit(const ray& r, float tmin, float tmax, HitRecord& rec) const;
+    virtual bool BoundingBox(AABB& box) const;
 
     // 数据
     vec3 vertex[3]; // 顶点
@@ -34,7 +34,7 @@ public:
 // Determine whether a ray intersect with a triangle
 // Parameters
 
-bool triangle::hit(const ray& r, float t_min, float t_max, hit_record& rec) const {
+bool triangle::Hit(const ray& r, float t_min, float t_max, HitRecord& rec) const {
     float t,u,v;
     bool is_hit = false;
 
@@ -89,7 +89,7 @@ bool triangle::hit(const ray& r, float t_min, float t_max, hit_record& rec) cons
     return true;
 }
 
-bool triangle::bounding_box(aabb& box) const{
+bool triangle::BoundingBox(AABB& box) const{
     vec3 _min, _max;
     _min[0] = ffmin(vertex[0].x(), ffmin(vertex[1].x(), vertex[2].x()));
     _min[1] = ffmin(vertex[0].y(), ffmin(vertex[1].y(), vertex[2].y()));
@@ -100,8 +100,8 @@ bool triangle::bounding_box(aabb& box) const{
     _max[1] = ffmax(vertex[0].y(), ffmax(vertex[1].y(), vertex[2].y()))+0.1;
     _max[2] = ffmax(vertex[0].z(), ffmax(vertex[1].z(), vertex[2].z()))+0.1;
 
-    box = aabb(_min, _max);
+    box = AABB(_min, _max);
     return true;
 }
 
-#endif /* triangle_h */
+#endif /* TRIANGLE_H */

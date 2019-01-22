@@ -6,13 +6,13 @@
 //  Copyright © 2018 moranzcw. All rights reserved.
 //
 
-#ifndef material_h
-#define material_h
+#ifndef MATERIAL_H
+#define MATERIAL_H
 
-struct hit_record;
+struct HitRecord;
 
 #include "ray.h"
-#include "hitable.h"
+#include "object.h"
 #include "texture.h"
 
 
@@ -52,7 +52,7 @@ vec3 random_in_unit_sphere() {
 class material  {
 public:
     // 散射函数，虚函数，需要在子类中实现，参数：入射光线，交点信息，衰减，散射
-    virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& attenuation, ray& scattered) const = 0;
+    virtual bool scatter(const ray& r_in, const HitRecord& rec, vec3& attenuation, ray& scattered) const = 0;
     // 自发光
     virtual vec3 emitted(float u, float v, const vec3& p) const {
         return vec3(0,0,0);
@@ -63,7 +63,7 @@ public:
 class diffuse_light : public material  {
     public:
         diffuse_light(texture *a) : emit(a) {}
-        virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& attenuation, ray& scattered) const { return false; }
+        virtual bool scatter(const ray& r_in, const HitRecord& rec, vec3& attenuation, ray& scattered) const { return false; }
         virtual vec3 emitted(float u, float v, const vec3& p) const { return emit->value(u, v, p); }
         texture *emit;
 };
@@ -76,7 +76,7 @@ public:
     lambertian(texture *a) : albedo(a) {}
     
     // 散射函数
-    virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& attenuation, ray& scattered) const  {
+    virtual bool scatter(const ray& r_in, const HitRecord& rec, vec3& attenuation, ray& scattered) const  {
         vec3 target = rec.p + rec.normal + random_in_unit_sphere();
         scattered = ray(rec.p, target-rec.p);
         attenuation = albedo->value(rec.u, rec.v, rec.p);
@@ -90,7 +90,7 @@ public:
 class metal : public material {
 public:
     metal(const vec3& a, float f) : albedo(a) { if (f < 1) fuzz = f; else fuzz = 1; }
-    virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& attenuation, ray& scattered) const  {
+    virtual bool scatter(const ray& r_in, const HitRecord& rec, vec3& attenuation, ray& scattered) const  {
         vec3 reflected = reflect(unit_vector(r_in.direction()), rec.normal);
         scattered = ray(rec.p, reflected + fuzz*random_in_unit_sphere());
         attenuation = albedo;
@@ -104,7 +104,7 @@ public:
 class dielectric : public material {
 public:
     dielectric(float ri) : ref_idx(ri) {}
-    virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& attenuation, ray& scattered) const  {
+    virtual bool scatter(const ray& r_in, const HitRecord& rec, vec3& attenuation, ray& scattered) const  {
         vec3 outward_normal;
         vec3 reflected = reflect(r_in.direction(), rec.normal);
         float ni_over_nt;
@@ -138,4 +138,4 @@ public:
     float ref_idx;
 };
 
-#endif /* material_h */
+#endif /* MATERIAL_H */

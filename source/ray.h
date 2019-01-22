@@ -6,8 +6,8 @@
 //  Copyright © 2018 moranzcw. All rights reserved.
 //
 
-#ifndef ray_h
-#define ray_h
+#ifndef RAY_H
+#define RAY_H
 
 #include "vec3.h"
 
@@ -25,4 +25,4 @@ public:
     vec3 B; // 方向
 };
 
-#endif /* ray_h */
+#endif /* RAY_H */

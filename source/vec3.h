@@ -6,8 +6,8 @@
 //  Copyright © 2018 moranzcw. All rights reserved.
 //
 
-#ifndef vec3_h
-#define vec3_h
+#ifndef VEC3_H
+#define VEC3_H
 
 #include <math.h>
 #include <stdlib.h>
@@ -147,4 +147,4 @@ inline vec3 unit_vector(vec3 v) {
     return v / v.length();
 }
 
-#endif /* vec3_h */
+#endif /* VEC3_H */

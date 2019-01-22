@@ -24,9 +24,9 @@
 
 // 着色，返回该光线的色彩，参数：光线，环境物品列表，迭代次数
 vec3 color(const ray& r, const scene &s, int depth) {
-    hit_record rec;
+    HitRecord rec;
     // 相交检测，rec带回相交信息
-    if (s.bvh_tree.hit(r, 0.001, FLT_MAX, rec)) {
+    if (s.bvh_tree.Hit(r, 0.001, FLT_MAX, rec)) {
         ray scattered; // 散射光线
         vec3 attenuation; // 衰减
         vec3 emitted = rec.mat_ptr->emitted(rec.u, rec.v, rec.p); //自发光

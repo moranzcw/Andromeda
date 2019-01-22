@@ -6,14 +6,14 @@
 //  Copyright © 2018 moranzcw. All rights reserved.
 //
 
-#ifndef cube_h
-#define cube_h
+#ifndef CUBE_H
+#define CUBE_H
 
 #include "triangle.h"
 #include "square.h"
 
-// 存放hitable对象的数组
-class cube: public hitable {
+// 存放Object对象的数组
+class cube: public Object {
 public:
     // 构造函数
     cube() {}
@@ -43,8 +43,8 @@ public:
     }
     
     //与所有triangle对象进行hit操作，求出距离最近的一组记录
-    virtual bool hit(const ray& r, float tmin, float tmax, hit_record& rec) const;
-    virtual bool bounding_box(aabb& box) const;
+    virtual bool Hit(const ray& r, float tmin, float tmax, HitRecord& rec) const;
+    virtual bool BoundingBox(AABB& box) const;
     // 数据
     vec3 center; // 中心
     float scale; // 边长
@@ -52,14 +52,14 @@ public:
     material *mat_ptr; // 材质
 };
 
-bool cube::hit(const ray& r, float t_min, float t_max, hit_record& rec) const {
-    hit_record temp_rec;
+bool cube::Hit(const ray& r, float t_min, float t_max, HitRecord& rec) const {
+    HitRecord temp_rec;
     bool hit_anything = false;
     double closest_so_far = t_max;
     
     // 批量调用每个square对象的hit函数，仅保留距离视点最近的一组hit信息
     for (int i = 0; i < 6; i++) {
-        if (squares[i].hit(r, t_min, closest_so_far, temp_rec)) {
+        if (squares[i].Hit(r, t_min, closest_so_far, temp_rec)) {
             hit_anything = true;
             closest_so_far = temp_rec.t;
             rec = temp_rec;
@@ -70,9 +70,9 @@ bool cube::hit(const ray& r, float t_min, float t_max, hit_record& rec) const {
 
 #include <iostream>
 using namespace std;
-bool cube::bounding_box(aabb& box) const{
-    aabb temp_box;
-    bool flag = squares[0].bounding_box(temp_box);
+bool cube::BoundingBox(AABB& box) const{
+    AABB temp_box;
+    bool flag = squares[0].BoundingBox(temp_box);
     if (!flag)
         return false;
     else 
@@ -80,12 +80,12 @@ bool cube::bounding_box(aabb& box) const{
     
     // 与所有对象求包围盒
     for (int i=1; i<6; i++) {
-        if(squares[i].bounding_box(temp_box)) {
-            box = surrounding_box(box, temp_box);
+        if(squares[i].BoundingBox(temp_box)) {
+            box = AABB::SurroundingBox(box, temp_box);
         }
         else
             return false;
     }
     return true;
 }
-#endif /* cube_h */
+#endif /* CUBE_H */
