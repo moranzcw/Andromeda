@@ -11,7 +11,7 @@
 
 #include "aabb.h"
 
-class material;
+class Material;
 
 // 保存一个相交的记录
 struct HitRecord
@@ -19,18 +19,18 @@ struct HitRecord
     float t; // 视点到交点的距离（即ray中的参数t）
     float u; // 纹理坐标u
     float v; // 纹理坐标v
-    vec3 p; // 交点
-    vec3 normal; // 法线
-    material *mat_ptr; // 材质
+    Vec3 p; // 交点
+    Vec3 normal; // 法线
+    Material *mat_ptr; // 材质
 };
 
 // 所有物体继承此类，用于实现检测光线与物体相交的方法
 class Object {
 public:
     // 纯虚函数，由子类自己实现，参数：光线，t的范围，hit_record用于保存相交信息
-    virtual bool Hit(const ray& r, float t_min, float t_max, HitRecord& rec) const = 0;
+    virtual bool hit(const Ray& r, float t_min, float t_max, HitRecord& rec) const = 0;
     // 纯虚函数，返回该对象的包围盒
-    virtual bool BoundingBox(AABB& box) const = 0;
+    virtual bool boundingBox(AABB& box) const = 0;
 
     // 虚析构函数
     virtual ~Object() {}

@@ -15,24 +15,28 @@
 #include "bvh.h"
 #include "skybox.h"
 
-class scene {
-public:
-    scene() {}
-    scene(std::vector<Object*> l, Camera cam, skybox *b) :list(l), bvh_tree(l), cam(cam), skb(b) {};
-    ~scene() {
-        for(auto p:list)
-            if(p) delete p;
-        if(skb)
-            delete skb;
+class Scene
+{
+  public:
+    Scene() {}
+    Scene(std::vector<Object *> l, Camera cam, SkyBox *b) : list(l),
+                                                            bvh_tree(l),
+                                                            cam(cam),
+                                                            skb(b){};
+    ~Scene()
+    {
+        if(skb) delete skb;
     }
 
-    bool add_object(Object *obj){
+    bool add_object(Object *obj)
+    {
         list.push_back(obj);
         reset_tree();
         return true;
     };
 
-    bool reset_tree(){
+    bool reset_tree()
+    {
         bvh_tree = BVHNode(list);
         return true;
     }
@@ -40,7 +44,7 @@ public:
     std::vector<Object *> list;
     BVHNode bvh_tree;
     Camera cam;
-    skybox *skb;
+    SkyBox *skb;
 };
 
 #endif /* SCENE_H */

@@ -11,18 +11,18 @@
 
 #include "vec3.h"
 
-class ray {
+class Ray {
 public:
-    ray() {}
-    ray(const vec3& a, const vec3& b) { A = a; B = b; }
-    vec3 origin() const       { return A; }
-    vec3 direction() const    { return B; }
+    Ray() {}
+    Ray(const Vec3& a, const Vec3& b) { A = a; B = b; }
+    Vec3 origin() const       { return A; }
+    Vec3 direction() const    { return B; }
     
     // 与参数t对应的射线的终点
-    vec3 point_at_parameter(float t) const { return A + t*B; }
+    Vec3 point_at_parameter(float t) const { return A + t*B; }
     
-    vec3 A; // 起点
-    vec3 B; // 方向
+    Vec3 A; // 起点
+    Vec3 B; // 方向
 };
 
 #endif /* RAY_H */

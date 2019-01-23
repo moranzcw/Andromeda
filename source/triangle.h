@@ -11,44 +11,44 @@
 
 #include "object.h"
 
-class triangle : public Object {
+class Triangle : public Object {
 public:
     // 构造函数
-    triangle() {}
+    Triangle() {}
     // 构造函数，参数为三个顶点，材质
-    triangle(vec3 v1, vec3 v2, vec3 v3, material *m) : normal(unit_vector(cross(v3-v1,v2-v1))), mat_ptr(m) {
+    Triangle(Vec3 v1, Vec3 v2, Vec3 v3, Material *m) : normal(makeUnit(cross(v3-v1,v2-v1))), mat_ptr(m) {
         vertex[0] = v1;
         vertex[1] = v2;
         vertex[2] = v3;
     };
-    // 相交检测
-    virtual bool Hit(const ray& r, float tmin, float tmax, HitRecord& rec) const;
-    virtual bool BoundingBox(AABB& box) const;
+
+    virtual bool hit(const Ray& r, float tmin, float tmax, HitRecord& rec) const;
+    virtual bool boundingBox(AABB& box) const;
 
     // 数据
-    vec3 vertex[3]; // 顶点
-    vec3 normal; // 法线
-    material *mat_ptr; // 材质
+    Vec3 vertex[3]; // 顶点
+    Vec3 normal; // 法线
+    Material *mat_ptr; // 材质
 };
 
 // Determine whether a ray intersect with a triangle
 // Parameters
 
-bool triangle::Hit(const ray& r, float t_min, float t_max, HitRecord& rec) const {
+bool Triangle::hit(const Ray& r, float t_min, float t_max, HitRecord& rec) const {
     float t,u,v;
     bool is_hit = false;
 
     // E1
-    vec3 E1 = vertex[1] - vertex[0];
+    Vec3 E1 = vertex[1] - vertex[0];
     // E2
-    vec3 E2 = vertex[2] - vertex[0];
+    Vec3 E2 = vertex[2] - vertex[0];
     // P
-    vec3 P = cross(r.direction(), E2);
+    Vec3 P = cross(r.direction(), E2);
     // determinant
     float det = dot(E1, P);
 
     // keep det > 0, modify T accordingly
-    vec3 T;
+    Vec3 T;
     if(det > 0){
         T = r.origin() - vertex[0];
     }else{
@@ -66,7 +66,7 @@ bool triangle::Hit(const ray& r, float t_min, float t_max, HitRecord& rec) const
         return false;
 
     // Q
-    vec3 Q = cross(T, E1);
+    Vec3 Q = cross(T, E1);
 
     // Calculate v and make sure u + v <= 1
     v = dot(r.direction(), Q);
@@ -89,8 +89,8 @@ bool triangle::Hit(const ray& r, float t_min, float t_max, HitRecord& rec) const
     return true;
 }
 
-bool triangle::BoundingBox(AABB& box) const{
-    vec3 _min, _max;
+bool Triangle::boundingBox(AABB& box) const{
+    Vec3 _min, _max;
     _min[0] = ffmin(vertex[0].x(), ffmin(vertex[1].x(), vertex[2].x()));
     _min[1] = ffmin(vertex[0].y(), ffmin(vertex[1].y(), vertex[2].y()));
     _min[2] = ffmin(vertex[0].z(), ffmin(vertex[1].z(), vertex[2].z()));
