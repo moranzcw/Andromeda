@@ -18,8 +18,7 @@
 #include "skybox.h"
 #include "resource.h"
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-#include <iostream>
+#include "tools/stb_image.h"
 
 // 生成场景
 Scene scene1() {
@@ -61,7 +60,6 @@ Scene scene1() {
 
     int nx, ny, nn; 
     unsigned char *tex_data = stbi_load(SKYBOX_TEXTURE_DAYLIGHT_2, &nx, &ny, &nn, 0);
-    // std::cout<<nx<<" "<<ny<<" "<<nn<<" "<<int(tex_data[nx*ny-1])<<std::endl;
     SkyBox *skb = new DaylightSkyBox(new ImageTexture(tex_data, nx, ny));
     return Scene(l, cam, skb);
 }

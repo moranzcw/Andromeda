@@ -135,4 +135,28 @@ bool box_z_compare(const Object *a, const Object *b)
     return box_left.min().z() - box_right.min().z() < 0.0;
 }
 
+// class BVHTree : public Object
+// {
+//   public:
+//     BVHTree() {}
+//     virtual ~BVHTree() {}
+//     virtual bool hit(const Ray &r, float tmin, float tmax, HitRecord &rec) const;
+//     virtual bool boundingBox(AABB &box) const;
+//     bool insert(Object *obj);
+//     bool clean();
+
+//     Object *root;
+// };
+
+// bool BVHTree::insert(Object *obj)
+// {
+//     Object *temp = root;
+//     while(temp){
+//         if(box_x_compare(obj, temp)){
+//             temp = temp->left;
+//         }
+//     }
+//     return true;
+// }
+
 #endif /* BVH_H */
