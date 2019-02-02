@@ -25,8 +25,8 @@ class Triangle : public Object
   public:
     // 构造函数
     Triangle() {}
-    // 构造函数，参数为三个顶点，材质
-    Triangle(Vec3 v1, Vec3 v2, Vec3 v3, Material *m) : mat_ptr(m)
+    Triangle(Vec3 v1, Vec3 v2, Vec3 v3, Material *m)
+        : mat_ptr(m)
     {
         vertex[0].position = v1;
         vertex[1].position = v2;
@@ -36,13 +36,18 @@ class Triangle : public Object
         vertex[0].normal = normal;
         vertex[0].normal = normal;
     };
+    Triangle(Vertex v1, Vertex v2, Vertex v3, Material *m)
+        : mat_ptr(m)
+    {
+        vertex[0] = v1;
+        vertex[1] = v2;
+        vertex[2] = v3;
+    };
 
     virtual bool hit(const Ray &r, float tmin, float tmax, HitRecord &rec) const;
     virtual bool boundingBox(AABB &box) const;
 
     // 数据
-    // Vec3 vertex[3];    // 顶点
-    // Vec3 normal;       // 法线
     Vertex vertex[3];
     Material *mat_ptr; // 材质
 };
@@ -73,11 +78,11 @@ bool Triangle::hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
         det = -det;
     }
 
-    // If determinant is near zero, ray lies in plane of triangle
+    //  determinant 接近0时，表示r射线与平面几乎平行
     if (det < 0.0001f)
         return false;
 
-    // Calculate u and make sure u <= 1
+    // 计算 u, 保证 u <= 1
     u = dot(T, P);
     if (u < 0.0f || u > det)
         return false;
@@ -85,12 +90,12 @@ bool Triangle::hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
     // Q
     Vec3 Q = cross(T, E1);
 
-    // Calculate v and make sure u + v <= 1
+    // 计算 v, 保证 u + v <= 1
     v = dot(r.direction(), Q);
     if (v < 0.0f || u + v > det)
         return false;
 
-    // Calculate t, scale parameters, ray intersects triangle
+    // 计算 t, 射线的缩放参数, 表示与三角形相交的点
     t = dot(E2, Q);
 
     float fInvDet = 1.0f / det;
@@ -98,9 +103,18 @@ bool Triangle::hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
     if (rec.t <= t_min || rec.t >= t_max)
         return false;
     rec.p = r.point_at_parameter(rec.t);
-    rec.u = u * fInvDet;
-    rec.v = v * fInvDet;
-    rec.normal = normal;
+
+    u = u * fInvDet;
+    v = v * fInvDet;
+
+    // 纹理uv坐标插值
+    rec.u = vertex[0].u * (1 - u - v) + vertex[1].u * v + vertex[2].u * v;
+    rec.v = vertex[0].v * (1 - u - v) + vertex[1].v * v + vertex[2].v * v;
+
+    // 法线插值
+    rec.normal = vertex[0].normal * (1 - u - v) + vertex[1].normal * v + vertex[2].normal * v;
+
+    // 纹理
     rec.mat_ptr = mat_ptr;
 
     return true;
@@ -113,7 +127,7 @@ bool Triangle::boundingBox(AABB &box) const
     _min[1] = ffmin(vertex[0].position.y(), ffmin(vertex[1].position.y(), vertex[2].position.y()));
     _min[2] = ffmin(vertex[0].position.z(), ffmin(vertex[1].position.z(), vertex[2].position.z()));
 
-    // 加0.1是为了防止盒子没有体积
+    // 加0.1是为了防止盒子没有体积（模型是平行于坐标轴的平面）
     _max[0] = ffmax(vertex[0].position.x(), ffmax(vertex[1].position.x(), vertex[2].position.x())) + 0.1;
     _max[1] = ffmax(vertex[0].position.y(), ffmax(vertex[1].position.y(), vertex[2].position.y())) + 0.1;
     _max[2] = ffmax(vertex[0].position.z(), ffmax(vertex[1].position.z(), vertex[2].position.z())) + 0.1;
