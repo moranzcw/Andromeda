@@ -121,7 +121,8 @@ int main()
     std::cout << "Depth:" << DEPTH << ", ";
     std::cout << "Thread:" << THREAD_NUM << std::endl;
 
-    Scene s = scene1();
+    // Scene s = scene1();
+    Scene s = scene2();
     // Scene s = skybox_scene();
     // Scene s = two_Spheres();
     // Scene s = perlin_spheres();
