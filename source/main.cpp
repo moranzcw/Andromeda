@@ -16,11 +16,11 @@
 #include "camera.h"
 #include "scenes.h"
 
-#define WIDTH 1280 / 4 // 宽
-#define HEIGHT 720 / 4 // 高
-#define SAMPLE 20     // 采样率
-#define DEPTH 50       // 迭代深度
-#define THREAD_NUM 4   // 线程数
+#define WIDTH 1280   // 宽
+#define HEIGHT 720   // 高
+#define SAMPLE 100    // 采样率
+#define DEPTH 50     // 迭代深度
+#define THREAD_NUM 4 // 线程数
 
 // 着色，返回该光线的色彩，参数：光线，环境物品列表，迭代次数
 Vec3 color(const Ray &r, const Scene &s, int depth)
@@ -170,7 +170,7 @@ int main()
     }
 
     // 收到的数据可能乱序，输出到二维vector中
-    std::vector<std::vector<Vec3> > pic(HEIGHT, std::vector<Vec3>(WIDTH));
+    std::vector<std::vector<Vec3>> pic(HEIGHT, std::vector<Vec3>(WIDTH));
     while (q2.size() > 0)
     {
         pixel p = q2.front();

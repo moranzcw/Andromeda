@@ -79,11 +79,10 @@ Scene scene2()
     std::vector<Object *> l;
     // 地面
     Texture *checker = new CheckerTexture(new ConstantTexture(Vec3(0.2, 0.3, 0.1)), new ConstantTexture(Vec3(0.9, 0.9, 0.9)));
-    l.push_back(new Square(Vec3(100, 0, 100), Vec3(-100, 0, 100), Vec3(-100, 0, -100), Vec3(100, 0, -100), new Lambertian(checker)));
+    // l.push_back(new Square(Vec3(100, 0, 100), Vec3(-100, 0, 100), Vec3(-100, 0, -100), Vec3(100, 0, -100), new Lambertian(checker)));
 
-    std::vector<Triangle> triangles;
     //
-    const char *filename = "../resource/models/cube.obj";
+    const char *filename = "../resource/models/tr-and-d-issue-43.obj";
     const char *basepath = "../resource/models/";
     std::cout << "Loading " << filename << std::endl;
 
@@ -150,6 +149,7 @@ Scene scene2()
                static_cast<const double>(attrib.texcoords[2 * v + 1]));
     }
 
+    std::vector<Triangle> triangles;
     // 对每个shape
     for (size_t i = 0; i < shapes.size(); i++)
     {
@@ -178,19 +178,21 @@ Scene scene2()
             printf("  face[%ld].fnum = %ld\n", static_cast<long>(f),
                    static_cast<unsigned long>(fnum));
 
-            Triangle triangle;
+            Vec3 position[3];
             // 对每个顶点
             for (size_t v = 0; v < fnum; v++)
             {
                 tinyobj::index_t idx = shapes[i].mesh.indices[index_offset + v];
-                printf("    face[%ld].v[%ld].idx = %d/%d/%d\n", static_cast<long>(f),
+                printf("    face[%ld].v[%ld].idx = %d/%d/%d, ", static_cast<long>(f),
                        static_cast<long>(v), idx.vertex_index, idx.normal_index,
                        idx.texcoord_index);
-                printf("        (%f, %f, %f)\n", attrib.vertices[idx.vertex_index * 3],
-                       attrib.vertices[idx.vertex_index * 3 + 1],
-                       attrib.vertices[idx.vertex_index * 3 + 2]);
+                position[v] = Vec3(static_cast<float>(attrib.vertices[idx.vertex_index * 3]),
+                             static_cast<float>(attrib.vertices[idx.vertex_index * 3 + 1]),
+                             static_cast<float>(attrib.vertices[idx.vertex_index * 3 + 2]));
+                std::cout<<position[v]<<std::endl;
             }
 
+            triangles.push_back(Triangle(position[0],position[1],position[2],new Lambertian(checker)));
             // printf("  face[%ld].material_id = %d\n", static_cast<long>(f),
             //        shapes[i].mesh.material_ids[f]);
             // printf("  face[%ld].smoothing_group_id = %d\n", static_cast<long>(f),
@@ -200,11 +202,12 @@ Scene scene2()
         }
     }
 
-    Camera cam(Vec3(0, 1, 15), Vec3(0, 1, 0), Vec3(0, 1, 0), 30, 16.0 / 9.0, 0.0, 15);
+    l.push_back(new Model(triangles));
+    Camera cam(Vec3(-6, 5, 20), Vec3(0, 0, 0), Vec3(0, 1, 0), 30, 16.0 / 9.0, 0.0, 15);
 
     int nx, ny, nn;
     unsigned char *tex_data = stbi_load(SKYBOX_TEXTURE_DAYLIGHT_2, &nx, &ny, &nn, 0);
-    SkyBox *skb = new DaylightSkyBox(new ImageTexture(tex_data, nx, ny));
+    SkyBox *skb = new BlueSkyBox();
     return Scene(l, cam, skb);
 }
 
@@ -216,7 +219,7 @@ Scene skybox_scene()
     l.push_back(new Sphere(Vec3(0, 1, 0), 1.0, new Dielectric(1.5)));
     l.push_back(new Sphere(Vec3(0, 1, 0), 0.8, new Dielectric(1.5)));
 
-    Camera cam(Vec3(0, 1, 2.5), Vec3(0, 1, 0), Vec3(0, 1, 0), 110, 16.0 / 9.0, 0.01, 2.5);
+    Camera cam(Vec3(0, 5, 10), Vec3(0, 1, 0), Vec3(0, 1, 0), 110, 16.0 / 9.0, 0.01, 2.5);
 
     int nx, ny, nn;
     unsigned char *tex_data = stbi_load(SKYBOX_TEXTURE_DAYLIGHT_2, &nx, &ny, &nn, 0);
