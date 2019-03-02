@@ -53,7 +53,7 @@ public:
         vertex[7] =  Vec3(-1,1,-1);
 
         for(int i=0;i<8;i++)
-            vertex[i] *= 5000;
+            vertex[i] *= 500000;
 
         Material *mat_ptr =  new Lambertian(new ConstantTexture);
 

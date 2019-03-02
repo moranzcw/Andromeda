@@ -113,6 +113,7 @@ bool Triangle::hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
 
     // 法线插值
     rec.normal = vertex[0].normal * (1 - u - v) + vertex[1].normal * v + vertex[2].normal * v;
+    // rec.normal = vertex[2].normal * (1 - u - v) + vertex[1].normal * v + vertex[0].normal * v;
 
     // 纹理
     rec.mat_ptr = mat_ptr;

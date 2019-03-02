@@ -18,7 +18,7 @@
 
 #define WIDTH 1280   // 宽
 #define HEIGHT 720   // 高
-#define SAMPLE 100    // 采样率
+#define SAMPLE 20    // 采样率
 #define DEPTH 50     // 迭代深度
 #define THREAD_NUM 4 // 线程数
 
