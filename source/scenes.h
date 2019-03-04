@@ -120,8 +120,8 @@ Scene scene2()
     std::cout << "# of texcoords : " << (attrib.texcoords.size() / 2) << std::endl;
 
     // 形状，纹理
-    std::cout << "# of shapes    : " << shapes.size() << std::endl;
-    std::cout << "# of materials : " << materials.size() << std::endl;
+    // std::cout << "# of shapes    : " << shapes.size() << std::endl;
+    // std::cout << "# of materials : " << materials.size() << std::endl;
 
     // 输出顶点坐标
     for (size_t v = 0; v < attrib.vertices.size() / 3; v++)
@@ -159,8 +159,6 @@ Scene scene2()
         // 顶点总数
         printf("Size of shape[%ld].mesh.indices: %lu\n", static_cast<long>(i),
                static_cast<unsigned long>(shapes[i].mesh.indices.size()));
-        // printf("Size of shape[%ld].path.indices: %lu\n", static_cast<long>(i),
-        //        static_cast<unsigned long>(shapes[i].path.indices.size()));
 
         size_t index_offset = 0;
 
