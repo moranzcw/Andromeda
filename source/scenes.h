@@ -82,7 +82,8 @@ Scene scene2()
 
     //
     // const char *filename = "../resource/models/tr-and-d-issue-43.obj";
-    const char *filename = "../resource/models/cube.obj";
+    const char *filename = "../resource/models/sponza.obj";
+    // const char *filename = "../resource/models/cube.obj";
     const char *basepath = "../resource/models/";
     std::cout << "Loading " << filename << std::endl;
 
@@ -204,8 +205,8 @@ Scene scene2()
                 }
                 else
                 {
-                    vertex[v].normal = makeUnit(cross(vertex[2].position - vertex[0].position,
-                                                      vertex[1].position - vertex[0].position));
+                    vertex[v].normal = makeUnit(cross(vertex[1].position - vertex[0].position,
+                                                      vertex[2].position - vertex[0].position));
                 }
 
                 if (idx.normal_index >= 0)
@@ -213,9 +214,19 @@ Scene scene2()
                     vertex[v].u = static_cast<float>(attrib.texcoords[idx.texcoord_index * 2 + 0]);
                     vertex[v].v = static_cast<float>(attrib.texcoords[idx.texcoord_index * 2 + 1]);
                 }
+                for (int i = 0; i < 3; i++)
+                {
+                    if (vertex[v].normal.e[i] == -0.0)
+                        vertex[v].normal.e[i] = 0.0;
+                }
+                std::cout << vertex[v].normal << std::endl;
+
+                std::cout << vertex[v].u << ", " << vertex[v].v << std::endl;
             }
 
-            triangles.push_back(Triangle(vertex[0], vertex[1], vertex[2], new Lambertian(checker)));
+            // triangles.push_back(Triangle(vertex[0], vertex[1], vertex[2], new Lambertian(checker)));
+            triangles.push_back(Triangle(vertex[0], vertex[1], vertex[2], new Lambertian(new ConstantTexture(Vec3(0.8, 0.8, 0.8)))));
+
             // triangles.push_back(Triangle(vertex[0], vertex[1], vertex[2], new Metal(Vec3(0.9,0.9,0.9),0.1)));
             // triangles.push_back(Triangle(vertex[0], vertex[1], vertex[2], new Dielectric(1.5)));
 
@@ -227,15 +238,19 @@ Scene scene2()
             index_offset += fnum;
         }
     }
-
+    std::cout << "num of triangles: "<< triangles.size() << std::endl;
     l.push_back(new Model(triangles));
-    // Camera cam(Vec3(-6, 5, 20), Vec3(0, 0, 0), Vec3(0, 1, 0), 30, 16.0 / 9.0, 0.0, 15);
-    Camera cam(Vec3(-6, 5, 20), Vec3(0, 0, 0), Vec3(0, 1, 0), 30, 16.0 / 9.0, 0.0, 15);
+
+    Material *light = new DiffuseLight(new ConstantTexture(Vec3(12, 12, 12)));
+    l.push_back(new Cube(Vec3(0, 18, 0), 2.5, light));
+
+    // Camera cam(Vec3(-4, 5, 20), Vec3(0, 0, 0), Vec3(0, 1, 0), 30, 16.0 / 9.0, 0.0, 15);
+    Camera cam(Vec3(15, 7.5, -1.5), Vec3(0, 8, 3), Vec3(0, 1, 0), 50, 16.0 / 9.0, 0.0, 15);
 
     int nx, ny, nn;
     unsigned char *tex_data = stbi_load(SKYBOX_TEXTURE_DAYLIGHT_2, &nx, &ny, &nn, 0);
-    // SkyBox *skb = new DaylightSkyBox(new ImageTexture(tex_data, nx, ny));
-    SkyBox *skb = new BlueSkyBox();
+    SkyBox *skb = new DaylightSkyBox(new ImageTexture(tex_data, nx, ny));
+    // SkyBox *skb = new BlueSkyBox();
     return Scene(l, cam, skb);
 }
 

@@ -33,8 +33,8 @@ class Triangle : public Object
         vertex[2].position = v3;
         Vec3 normal = makeUnit(cross(v3 - v1, v2 - v1));
         vertex[0].normal = normal;
-        vertex[0].normal = normal;
-        vertex[0].normal = normal;
+        vertex[1].normal = normal;
+        vertex[2].normal = normal;
     };
     Triangle(Vertex v1, Vertex v2, Vertex v3, Material *m)
         : mat_ptr(m)
@@ -108,12 +108,11 @@ bool Triangle::hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
     v = v * fInvDet;
 
     // 纹理uv坐标插值
-    rec.u = vertex[0].u * (1 - u - v) + vertex[1].u * v + vertex[2].u * v;
-    rec.v = vertex[0].v * (1 - u - v) + vertex[1].v * v + vertex[2].v * v;
+    rec.u = vertex[0].u * (1 - u - v) + vertex[1].u * u + vertex[2].u * v;
+    rec.v = vertex[0].v * (1 - u - v) + vertex[1].v * u + vertex[2].v * v;
 
     // 法线插值
-    rec.normal = vertex[0].normal * (1 - u - v) + vertex[1].normal * v + vertex[2].normal * v;
-    // rec.normal = vertex[2].normal * (1 - u - v) + vertex[1].normal * v + vertex[0].normal * v;
+    rec.normal = vertex[0].normal * (1 - u - v) + vertex[1].normal * u + vertex[2].normal * v;
 
     // 纹理
     rec.mat_ptr = mat_ptr;

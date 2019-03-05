@@ -25,7 +25,8 @@ class Scene
                                                             skb(b){};
     ~Scene()
     {
-        if(skb) delete skb;
+        if (skb)
+            delete skb;
     }
 
     bool add_object(Object *obj)
