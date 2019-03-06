@@ -115,67 +115,20 @@ Scene scene2()
         std::cerr << "Failed to load/parse .obj." << std::endl;
     }
 
-    // 顶点，法线，纹理坐标
-    std::cout << "# of vertices  : " << (attrib.vertices.size() / 3) << std::endl;
-    std::cout << "# of normals   : " << (attrib.normals.size() / 3) << std::endl;
-    std::cout << "# of texcoords : " << (attrib.texcoords.size() / 2) << std::endl;
-
-    // 形状，纹理
-    // std::cout << "# of shapes    : " << shapes.size() << std::endl;
-    // std::cout << "# of materials : " << materials.size() << std::endl;
-
-    // 输出顶点坐标
-    for (size_t v = 0; v < attrib.vertices.size() / 3; v++)
-    {
-        printf("  v[%ld] = (%f, %f, %f)\n", static_cast<long>(v),
-               static_cast<const double>(attrib.vertices[3 * v + 0]),
-               static_cast<const double>(attrib.vertices[3 * v + 1]),
-               static_cast<const double>(attrib.vertices[3 * v + 2]));
-    }
-
-    // 输出法线
-    for (size_t v = 0; v < attrib.normals.size() / 3; v++)
-    {
-        printf("  n[%ld] = (%f, %f, %f)\n", static_cast<long>(v),
-               static_cast<const double>(attrib.normals[3 * v + 0]),
-               static_cast<const double>(attrib.normals[3 * v + 1]),
-               static_cast<const double>(attrib.normals[3 * v + 2]));
-    }
-
-    // 输出纹理坐标
-    for (size_t v = 0; v < attrib.texcoords.size() / 2; v++)
-    {
-        printf("  uv[%ld] = (%f, %f)\n", static_cast<long>(v),
-               static_cast<const double>(attrib.texcoords[2 * v + 0]),
-               static_cast<const double>(attrib.texcoords[2 * v + 1]));
-    }
-
     std::vector<Triangle> triangles;
     // 对每个shape
     for (size_t i = 0; i < shapes.size(); i++)
     {
-        // shape名
-        printf("shape[%ld].name = %s\n", static_cast<long>(i),
-               shapes[i].name.c_str());
-        // 顶点总数
-        printf("Size of shape[%ld].mesh.indices: %lu\n", static_cast<long>(i),
-               static_cast<unsigned long>(shapes[i].mesh.indices.size()));
 
         size_t index_offset = 0;
 
         assert(shapes[i].mesh.num_face_vertices.size() == shapes[i].mesh.material_ids.size());
         assert(shapes[i].mesh.num_face_vertices.size() == shapes[i].mesh.smoothing_group_ids.size());
 
-        printf("shape[%ld].num_faces: %lu\n", static_cast<long>(i),
-               static_cast<unsigned long>(shapes[i].mesh.num_face_vertices.size()));
-
         // 对每个face
         for (size_t f = 0; f < shapes[i].mesh.num_face_vertices.size(); f++)
         {
             size_t fnum = shapes[i].mesh.num_face_vertices[f];
-
-            printf("  face[%ld].fnum = %ld\n", static_cast<long>(f),
-                   static_cast<unsigned long>(fnum));
 
             // 顶点
             Vertex vertex[3];
@@ -184,13 +137,10 @@ Scene scene2()
             for (size_t v = 0; v < fnum; v++)
             {
                 tinyobj::index_t idx = shapes[i].mesh.indices[index_offset + v];
-                printf("    face[%ld].v[%ld].idx = %d/%d/%d, ", static_cast<long>(f),
-                       static_cast<long>(v), idx.vertex_index, idx.normal_index,
-                       idx.texcoord_index);
+
                 vertex[v].position = Vec3(static_cast<float>(attrib.vertices[idx.vertex_index * 3]),
                                           static_cast<float>(attrib.vertices[idx.vertex_index * 3 + 1]),
                                           static_cast<float>(attrib.vertices[idx.vertex_index * 3 + 2]));
-                std::cout << vertex[v].position << std::endl;
             }
 
             // 顶点法线, uv坐标
@@ -219,9 +169,6 @@ Scene scene2()
                     if (vertex[v].normal.e[i] == -0.0)
                         vertex[v].normal.e[i] = 0.0;
                 }
-                std::cout << vertex[v].normal << std::endl;
-
-                std::cout << vertex[v].u << ", " << vertex[v].v << std::endl;
             }
 
             // triangles.push_back(Triangle(vertex[0], vertex[1], vertex[2], new Lambertian(checker)));
@@ -238,7 +185,7 @@ Scene scene2()
             index_offset += fnum;
         }
     }
-    std::cout << "num of triangles: "<< triangles.size() << std::endl;
+    std::cout << "num of triangles: " << triangles.size() << std::endl;
     l.push_back(new Model(triangles));
 
     Material *light = new DiffuseLight(new ConstantTexture(Vec3(12, 12, 12)));

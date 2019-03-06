@@ -16,11 +16,11 @@
 #include "camera.h"
 #include "scenes.h"
 
-#define WIDTH 1280   // 宽
-#define HEIGHT 720   // 高
-#define SAMPLE 200    // 采样率
+#define WIDTH 1280/6   // 宽
+#define HEIGHT 720/6   // 高
+#define SAMPLE 1000    // 采样率
 #define DEPTH 50     // 迭代深度
-#define THREAD_NUM 4 // 线程数
+#define THREAD_NUM 8 // 线程数
 
 // 着色，返回该光线的色彩，参数：光线，环境物品列表，迭代次数
 Vec3 color(const Ray &r, const Scene &s, int depth)
