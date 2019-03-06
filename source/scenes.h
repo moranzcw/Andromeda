@@ -82,7 +82,8 @@ Scene scene2()
 
     //
     // const char *filename = "../resource/models/tr-and-d-issue-43.obj";
-    const char *filename = "../resource/models/sponza.obj";
+    // const char *filename = "../resource/models/sponza.obj";
+    const char *filename = "../resource/models/opera-house.obj";
     // const char *filename = "../resource/models/cube.obj";
     const char *basepath = "../resource/models/";
     std::cout << "Loading " << filename << std::endl;
@@ -188,16 +189,24 @@ Scene scene2()
     std::cout << "num of triangles: " << triangles.size() << std::endl;
     l.push_back(new Model(triangles));
 
-    Material *light = new DiffuseLight(new ConstantTexture(Vec3(12, 12, 12)));
-    l.push_back(new Cube(Vec3(0, 18, 0), 2.5, light));
+    // Material *light = new DiffuseLight(new ConstantTexture(Vec3(12, 12, 12))); // sponza
+    // l.push_back(new Cube(Vec3(0, 18, 0), 2.5, light)); // sponza
 
-    // Camera cam(Vec3(-4, 5, 20), Vec3(0, 0, 0), Vec3(0, 1, 0), 30, 16.0 / 9.0, 0.0, 15);
-    Camera cam(Vec3(15, 7.5, -1.5), Vec3(0, 8, 3), Vec3(0, 1, 0), 50, 16.0 / 9.0, 0.0, 15);
+    Material *light = new DiffuseLight(new ConstantTexture(Vec3(12, 12, 12))); // opera
+    l.push_back(new Cube(Vec3(-100, 100, -100), 30, light)); // opera
+
+    Material *light2 = new DiffuseLight(new ConstantTexture(Vec3(12, 12, 12))); // opera
+    l.push_back(new Cube(Vec3(100, 100, -20), 30, light2)); // opera
+
+    // Camera cam(Vec3(-4, 5, 20), Vec3(0, 0, 0), Vec3(0, 1, 0), 30, 16.0 / 9.0, 0.0, 15); // plane
+    // Camera cam(Vec3(15, 7.5, -1.5), Vec3(0, 8, 3), Vec3(0, 1, 0), 50, 16.0 / 9.0, 0.0, 15); // sponza
+    Camera cam(Vec3(130, 100, -200), Vec3(0, 10, -30), Vec3(0, 1, 0), 30, 16.0 / 9.0, 0.0, 15); // sponza
 
     int nx, ny, nn;
     unsigned char *tex_data = stbi_load(SKYBOX_TEXTURE_DAYLIGHT_2, &nx, &ny, &nn, 0);
-    SkyBox *skb = new DaylightSkyBox(new ImageTexture(tex_data, nx, ny));
+    // SkyBox *skb = new DaylightSkyBox(new ImageTexture(tex_data, nx, ny));
     // SkyBox *skb = new BlueSkyBox();
+    SkyBox *skb = new BlackSkyBox();
     return Scene(l, cam, skb);
 }
 
