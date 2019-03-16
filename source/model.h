@@ -42,22 +42,6 @@ class Model : public Object
 
 bool Model::hit(const Ray &r, float t_min, float t_max, HitRecord &rec) const
 {
-    // HitRecord temp_rec;
-    // bool hit_anything = false;
-    // double closest_so_far = t_max;
-
-    // // 批量调用每个triangle对象的hit函数，仅保留距离视点最近的一组hit信息
-    // for (int i = 0; i < triangles.size(); i++)
-    // {
-    //     if (triangles[i].hit(r, t_min, closest_so_far, temp_rec))
-    //     {
-    //         hit_anything = true;
-    //         closest_so_far = temp_rec.t;
-    //         rec = temp_rec;
-    //     }
-    // }
-    // return hit_anything;
-
     // 相交检测，rec带回相交信息
     return bvh_tree.hit(r, 0.001, FLT_MAX, rec);
 }
