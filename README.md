@@ -1,6 +1,6 @@
 # Andromeda
 
-## 简介
+![license](https://img.shields.io/badge/license-MIT-brightgreen.svg)![language](https://img.shields.io/badge/language-C%2B%2B11-brightgreen.svg) 
 
 使用C++编写的基于光线追踪（路径追踪）的软件渲染器。
 
