@@ -29,6 +29,7 @@ class Camera
         update();
     }
 
+    
     // 构造函数，参数：相机位置，相机指向，视野上方方向，视角(垂直方向)，宽高比，光圈，焦平面到相机的距离
     Camera(Vec3 pos, Vec3 direct_pos, Vec3 vup, float vfov, float aspect,
            float aperture, float focus_dist)
